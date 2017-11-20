@@ -1,0 +1,28 @@
+{
+  "name": "phantom-crawler",
+  "version": "1.0.0",
+  "description": "Crawl websites with PhantomJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node lib/app.js",
+    "build": "npx babel src/app.ts --out-file lib/app.js",
+    "dev": "ts-node-dev src/app.ts"
+  },
+  "author": "Kevin Upton",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "4.0.39",
+    "@types/node": "8.0.53",
+    "babel-cli": "7.0.0-beta.3",
+    "babel-node": "7.0.0-beta.3",
+    "babel-plugin-transform-class-properties": "6.24.1",
+    "babel-preset-env": "7.0.0-beta.3",
+    "babel-preset-typescript": "7.0.0-alpha.19",
+    "ts-node-dev": "1.0.0-pre.5"
+  },
+  "dependencies": {
+    "express": "4.16.2",
+    "typescript": "2.6.1"
+  }
+}
