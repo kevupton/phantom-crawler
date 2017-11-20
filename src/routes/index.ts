@@ -1,8 +1,6 @@
+import { www } from './www';
+import { Router } from '../system/Router';
 
-import { Express } from 'express';
-
-export function loadRoutes (app : Express) {
-  app.get('test', (req, res) => {
-    res.send('Hello World!');
-  });
+export function routes (router : Router) {
+  www(router);
 }
