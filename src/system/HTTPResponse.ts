@@ -7,12 +7,28 @@ export class HTTPResponse {
     status_code: 200
   };
 
+  private _sent = false;
+
   constructor (
     private response : Response
   ) {}
 
   send (data) {
     this._send({data});
+  }
+
+  html (content : string) {
+    if (this._sent) return;
+    this._sent = true;
+    this.response.set({'Content-Type': 'text/html'});
+    this.response.send(content);
+  }
+
+  file (content : string, name : string) {
+    if (this._sent) return;
+    this._sent = true;
+    this.response.set({'Content-Disposition': `attachment; filename="${name}"`});
+    this.response.send(content);
   }
 
   error (error : any) {
@@ -34,6 +50,8 @@ export class HTTPResponse {
   }
 
   private _send (obj) {
+    if (this._sent) return;
+    this._sent = true;
     this.response.status(obj.status_code || 200);
     this.response.header({'Content-type': 'application/json'});
     this.response.send(JSON.stringify(this._makeResponse(obj)));

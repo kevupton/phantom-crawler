@@ -28,7 +28,7 @@ export class Router {
       try {
         const ctrl = new controller(request, response);
         if (typeof ctrl[method] === 'function') {
-          const data = await ctrl[method](req.params, request.body);
+          const data = await ctrl[method](Object.assign(req.query, req.params, request.body));
           response.send(data || null);
         }
         else {

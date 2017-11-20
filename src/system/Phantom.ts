@@ -44,6 +44,10 @@ export class Phantom {
   async getProperty (property : string, defaultValue? : any) {
     return this._page && this._page.property(property) || defaultValue;
   }
+
+  async run <R> (fn : any) {
+    return this._page && this._page.evaluate<R>(fn);
+  }
 }
 //
 // (async function () {

@@ -20,8 +20,12 @@ export class PhantomController extends Controller {
     };
   }
 
-  async setCookies (params, body) {
-    return body;
+  async download () {
+    this.response.file(await Phantom.instance.getProperty('content'), 'content.html');
+  }
+
+  async display () {
+    this.response.html(await Phantom.instance.getProperty('content'));
   }
 }
 
