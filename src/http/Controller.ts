@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
-import { HTTPRequest } from '../system/Request';
-import { HTTPResponse } from '../system/Response';
+import { HTTPRequest } from '../system/HTTPRequest';
+import { HTTPResponse } from '../system/HTTPResponse';
 
 export class Controller {
 
