@@ -8,6 +8,7 @@
     "start": "node lib/app.js",
     "clean": "rimraf lib",
     "build": "webpack",
+    "watch": "webpack --watch",
     "dev": "ts-node-dev src/index.ts",
     "prepublish": "npm run clean && npm run build"
   },

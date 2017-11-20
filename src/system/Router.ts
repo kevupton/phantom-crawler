@@ -25,15 +25,28 @@ export class Router {
     this.app[route](`/${path}`, async (req : Request, res : Response) => {
       const request = new HTTPRequest(req);
       const response = new HTTPResponse(res);
+
+      console.log(`[LOG] Received request for ${path}.`);
+
       try {
         const ctrl = new controller(request, response);
+        let error = null;
+
         if (typeof ctrl[method] === 'function') {
-          const data = await ctrl[method](Object.assign(req.query, req.params, request.body));
-          response.send(data || null);
+          try {
+            const data = await ctrl[method](Object.assign(req.query, req.params, request.body));
+            response.send(data || null);
+          }
+          catch (e) {
+            error = e;
+          }
         }
         else {
           throw new Exception(`${method} does not exist on Controller`);
         }
+
+        ctrl.destructor();
+        if (error) throw error;
       }
       catch (e) {
         new ExceptionHandler(e, request, response);

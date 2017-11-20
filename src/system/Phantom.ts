@@ -3,7 +3,7 @@ import { PhantomJS, WebPage } from 'phantom';
 
 export class Phantom {
 
-  static _instance = null;
+  private static _instance = null;
 
   static get instance () : Phantom {
     return this._instance || (this._instance = new Phantom());
@@ -27,6 +27,14 @@ export class Phantom {
     return !!this._page;
   }
 
+  on (eventName : string, fn : Function) : Promise<any> {
+    return this._page && (<any>this._page).on(eventName, fn);
+  }
+
+  off (eventName : string, fn : Function) : Promise<any> {
+    return this._page && (<any>this._page).on(eventName, fn);
+  }
+
   async open (url : string) : Promise<{ status : string, page : WebPage }> {
     if (!this.hasPage) {
       const instance : PhantomJS = await this._promise;
@@ -41,11 +49,11 @@ export class Phantom {
     return {status, page: this._page};
   }
 
-  async getProperty (property : string, defaultValue? : any) {
+  getProperty (property : string, defaultValue? : any) {
     return this._page && this._page.property(property) || defaultValue;
   }
 
-  async run <R> (fn : any) {
+  run <R> (fn : any) {
     return this._page && this._page.evaluate<R>(fn);
   }
 }
