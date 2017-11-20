@@ -1,10 +1,10 @@
-# PHANTOM CRAWLER
+# PHANTOM CRAWLER SERVER
 
 ## Easy web-crawling using HTTP API server.
 
 ### INSTALL
 ```bash
-npm i -g phantom-crawler
+npm i -g phantom-crawler-server
 ```
 
 ### USAGE

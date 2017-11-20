@@ -1,5 +1,5 @@
 {
-  "name": "phantom-crawler",
+  "name": "phantom-crawler-server",
   "version": "1.0.0",
   "description": "Crawl websites with PhantomJS",
   "main": "lib/app.js",
@@ -40,6 +40,6 @@
   },
   "preferGlobal": true,
   "bin": {
-    "phantom-crawler": "./lib/app.js"
+    "phantom-server": "./lib/app.js"
   }
 }
