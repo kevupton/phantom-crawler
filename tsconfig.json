@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
     "target": "es5",
-    "outDir": "../out",
+    "outDir": "lib",
     "experimentalDecorators": true,
-    "lib": [
-      "es6"
-    ],
-    "sourceMap": true,
-    "rootDir": "."
+    "moduleResolution": "node",
+    "lib": ["DOM", "es7"],
+    "allowSyntheticDefaultImports": true
   },
+  "files": ["src/index.ts"],
   "exclude": [
     "node_modules"
   ]

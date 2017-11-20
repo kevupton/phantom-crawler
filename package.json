@@ -2,12 +2,14 @@
   "name": "phantom-crawler",
   "version": "1.0.0",
   "description": "Crawl websites with PhantomJS",
-  "main": "index.js",
+  "main": "lib/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node lib/app.js",
-    "build": "npx babel src/index.ts --out-file lib/app.js",
-    "dev": "ts-node-dev src/index.ts"
+    "clean": "rimraf lib",
+    "build": "webpack",
+    "dev": "ts-node-dev src/index.ts",
+    "prepublish": "npm run clean && npm run build"
   },
   "author": "Kevin Upton",
   "license": "ISC",
@@ -17,16 +19,27 @@
     "@types/phantom": "3.2.3",
     "@types/phantomjs": "1.9.29",
     "babel-cli": "7.0.0-beta.3",
+    "babel-core": "7.0.0-beta.3",
+    "babel-loader": "7.1.2",
     "babel-node": "7.0.0-beta.3",
-    "babel-plugin-transform-class-properties": "6.24.1",
+    "babel-plugin-transform-class-properties": "7.0.0-beta.3",
+    "babel-plugin-transform-runtime": "7.0.0-beta.3",
+    "babel-polyfill": "6.26.0",
     "babel-preset-env": "7.0.0-beta.3",
     "babel-preset-typescript": "7.0.0-alpha.19",
-    "ts-node-dev": "1.0.0-pre.5"
+    "rimraf": "2.6.2",
+    "ts-loader": "3.1.1",
+    "ts-node-dev": "1.0.0-pre.5",
+    "webpack": "3.8.1",
+    "webpack-node-externals": "1.6.0"
   },
   "dependencies": {
-    "child_process": "1.0.2",
     "express": "4.16.2",
     "phantom": "4.0.8",
     "typescript": "2.6.1"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "phantom-crawler": "./lib/app.js"
   }
 }

@@ -1,7 +1,5 @@
 {
-  "presets": ["typescript", "env"],
-  "ignore": [
-    "node_modules"
-  ],
-  "plugins": ["transform-class-properties"]
+  "presets": ["env"],
+  "ignore": ["node_modules"],
+  "plugins": []
 }
