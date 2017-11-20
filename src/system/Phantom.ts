@@ -40,6 +40,10 @@ export class Phantom {
 
     return {status, page: this._page};
   }
+
+  async getProperty (property : string, defaultValue? : any) {
+    return this._page && this._page.property(property) || defaultValue;
+  }
 }
 //
 // (async function () {

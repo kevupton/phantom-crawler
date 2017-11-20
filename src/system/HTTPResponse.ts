@@ -33,8 +33,8 @@ export class HTTPResponse {
     return Object.assign({}, this.responseObj, obj);
   }
 
-  private _send (obj, code = 200) {
-    this.response.status(code);
+  private _send (obj) {
+    this.response.status(obj.status_code || 200);
     this.response.header({'Content-type': 'application/json'});
     this.response.send(JSON.stringify(this._makeResponse(obj)));
   }

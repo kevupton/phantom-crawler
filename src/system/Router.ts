@@ -14,6 +14,10 @@ export class Router {
     this.call('get', path, controller, method);
   }
 
+  post (path, controller : typeof Controller, method?) {
+    this.call('post', path, controller, method);
+  }
+
   private call (route, path, controller : typeof Controller, method?) {
     path = path.replace(/^\s*\/|\/\s*$/, '');
     if (!method) method = path;
@@ -24,7 +28,7 @@ export class Router {
       try {
         const ctrl = new controller(request, response);
         if (typeof ctrl[method] === 'function') {
-          const data = await ctrl[method](req.params);
+          const data = await ctrl[method](req.params, request.body);
           response.send(data || null);
         }
         else {
