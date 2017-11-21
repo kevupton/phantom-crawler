@@ -1,6 +1,6 @@
 {
   "name": "phantom-crawler-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Crawl websites with PhantomJS",
   "main": "lib/app.js",
   "scripts": {
