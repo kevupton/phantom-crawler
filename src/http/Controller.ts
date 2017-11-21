@@ -19,19 +19,6 @@ export class Controller {
 
   }
 
-  run (script : any) {
-    return Phantom.instance.run(script);
-  }
-
-  on (eventName : string, fn : Function) {
-    this._events.push({
-      eventName,
-      fn
-    });
-
-    return Phantom.instance.on(eventName, fn);
-  }
-
   async awaitPageLoads () : Promise<() => Promise<any>> {
     let changing_pages = false;
 
@@ -51,5 +38,18 @@ export class Controller {
 
   destructor () {
     this._events.forEach(event => Phantom.instance.off(event.eventName, event.fn));
+  }
+
+  on (eventName : string, fn : Function) {
+    this._events.push({
+      eventName,
+      fn
+    });
+
+    return Phantom.instance.on(eventName, fn);
+  }
+
+  run (script : any) {
+    return Phantom.instance.run(script);
   }
 }

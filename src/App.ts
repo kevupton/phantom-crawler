@@ -14,7 +14,7 @@ export class Application {
 
   configure () {
     this.app.use(bodyParser.json()); // support json encoded bodies
-    this.app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+    this.app.use(bodyParser.urlencoded({extended: true})); // support encoded bodies
   }
 
   loadRoutes () {

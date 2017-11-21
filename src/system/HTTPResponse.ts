@@ -1,4 +1,3 @@
-
 import { Response } from 'express';
 import { Exception } from '../exceptions/Exception';
 
@@ -13,26 +12,8 @@ export class HTTPResponse {
     private response : Response
   ) {}
 
-  send (data) {
-    this._send({data});
-  }
-
-  html (content : string) {
-    if (this._sent) return;
-    this._sent = true;
-    this.response.set({'Content-Type': 'text/html'});
-    this.response.send(content);
-  }
-
-  file (content : string, name : string) {
-    if (this._sent) return;
-    this._sent = true;
-    this.response.set({'Content-Disposition': `attachment; filename="${name}"`});
-    this.response.send(content);
-  }
-
   error (error : any) {
-    const obj: any = {
+    const obj : any = {
       status_code: 500,
       error_message: `Uncaught '${error.name}': ${error.message}`
     };
@@ -43,6 +24,24 @@ export class HTTPResponse {
       obj.stack_trace = error.stack;
     }
     this._send(obj);
+  }
+
+  file (content : string, name : string) {
+    if (this._sent) return;
+    this._sent = true;
+    this.response.set({'Content-Disposition': `attachment; filename="${name}"`});
+    this.response.send(content);
+  }
+
+  html (content : string) {
+    if (this._sent) return;
+    this._sent = true;
+    this.response.set({'Content-Type': 'text/html'});
+    this.response.send(content);
+  }
+
+  send (data) {
+    this._send({data});
   }
 
   private _makeResponse (obj) {

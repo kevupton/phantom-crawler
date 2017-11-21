@@ -1,13 +1,6 @@
-
 import { Request } from 'express';
 
 export class HTTPRequest {
-  constructor (
-    public request : Request
-  ) {
-
-  }
-
   get body () {
     try {
       return JSON.parse(this.request.body);
@@ -15,5 +8,11 @@ export class HTTPRequest {
     catch (e) {
       return this.request.body;
     }
+  }
+
+  constructor (
+    public request : Request
+  ) {
+
   }
 }

@@ -5,7 +5,7 @@ export class DomController extends Controller {
   async click ({query}) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
-    const fn = await this.awaitPageLoads();
+    const fn     = await this.awaitPageLoads();
     const result = await this.run(`function () {
       try {
       

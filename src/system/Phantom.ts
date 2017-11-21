@@ -12,13 +12,6 @@ export class Phantom {
   private _promise : Promise<PhantomJS>;
   private _page : WebPage;
 
-  private constructor () {
-    this._promise = (<any>phantom).create(
-      ['--ignore-ssl-errors=yes', '--load-images=no', '--ssl-protocol=any', '--web-security=no'],
-      {logLevel: 'error'}
-    );
-  }
-
   get page () {
     return this._page;
   }
@@ -27,11 +20,22 @@ export class Phantom {
     return !!this._page;
   }
 
-  on (eventName : string, fn : Function) : Promise<any> {
-    return this._page && (<any>this._page).on(eventName, fn);
+  private constructor () {
+    this._promise = (<any>phantom).create(
+      ['--ignore-ssl-errors=yes', '--load-images=no', '--ssl-protocol=any', '--web-security=no'],
+      {logLevel: 'error'}
+    );
+  }
+
+  getProperty (property : string, defaultValue? : any) {
+    return this._page && this._page.property(property) || defaultValue;
   }
 
   off (eventName : string, fn : Function) : Promise<any> {
+    return this._page && (<any>this._page).on(eventName, fn);
+  }
+
+  on (eventName : string, fn : Function) : Promise<any> {
     return this._page && (<any>this._page).on(eventName, fn);
   }
 
@@ -49,14 +53,11 @@ export class Phantom {
     return {status, page: this._page};
   }
 
-  getProperty (property : string, defaultValue? : any) {
-    return this._page && this._page.property(property) || defaultValue;
-  }
-
-  run <R> (fn : any) {
+  run<R> (fn : any) {
     return this._page && this._page.evaluate<R>(fn);
   }
 }
+
 //
 // (async function () {
 //

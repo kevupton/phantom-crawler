@@ -6,7 +6,7 @@ export class Exception {
     public message,
     public code = 500
   ) {
-    this.name = this.constructor.name;
+    this.name  = this.constructor.name;
     this.stack = (new Error()).stack;
   }
 

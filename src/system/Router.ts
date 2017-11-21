@@ -23,14 +23,14 @@ export class Router {
     if (!method) method = path;
 
     this.app[route](`/${path}`, async (req : Request, res : Response) => {
-      const request = new HTTPRequest(req);
+      const request  = new HTTPRequest(req);
       const response = new HTTPResponse(res);
 
       console.log(`[LOG] Received request for ${path}.`);
 
       try {
         const ctrl = new controller(request, response);
-        let error = null;
+        let error  = null;
 
         if (typeof ctrl[method] === 'function') {
           try {
