@@ -32,7 +32,7 @@ export class Phantom {
   }
 
   off (eventName : string, fn : Function) : Promise<any> {
-    return this._page && (<any>this._page).on(eventName, fn);
+    return this._page && (<any>this._page).off(eventName, fn);
   }
 
   on (eventName : string, fn : Function) : Promise<any> {
@@ -46,6 +46,7 @@ export class Phantom {
       await this._page.property('viewportSize', {width: 1800, height: 1200});
     }
 
+    await (<any>this._page).invokeMethod('clearMemoryCache');
     const status = await this._page.open(url);
 
     if (status !== 'success') throw new Error(`${status}: Unable to load WebPage`);
