@@ -22,7 +22,7 @@ export class Phantom {
 
   private constructor () {
     this._promise = (<any>phantom).create(
-      ['--ignore-ssl-errors=yes', '--load-images=no', '--ssl-protocol=any', '--web-security=no'],
+      ['--ignore-ssl-errors=yes', '--load-images=yes', '--ssl-protocol=any', '--web-security=no'],
       {logLevel: 'error'}
     );
   }
@@ -44,6 +44,7 @@ export class Phantom {
       const instance : PhantomJS = await this._promise;
       this._page                 = await instance.createPage();
       await this._page.property('viewportSize', {width: 1800, height: 1200});
+      await this._page.setting('clearMemoryCaches', true);
     }
 
     await (<any>this._page).invokeMethod('clearMemoryCache');
