@@ -12,6 +12,7 @@
     "dev": "ts-node-dev src/index.ts",
     "prepublish": "npm run clean && npm run build"
   },
+  "repository": "https://github.com/kevupton/phantom-crawler",
   "author": "Kevin Upton",
   "license": "ISC",
   "devDependencies": {
