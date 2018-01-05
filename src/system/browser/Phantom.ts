@@ -1,5 +1,5 @@
-import * as phantom from 'phantom';
-import { PhantomJS, WebPage } from 'phantom';
+import * as phantom from 'Phantom';
+import { PhantomJS, WebPage } from 'Phantom';
 
 export class Phantom {
 
@@ -21,9 +21,12 @@ export class Phantom {
   }
 
   private constructor () {
+    if (process.env.DEBUG) {
+      console.info('[DEBUG] Running phantom in debug mode')
+    }
     this._promise = (<any>phantom).create(
-      ['--ignore-ssl-errors=yes', '--load-images=yes', '--ssl-protocol=any', '--web-security=no'],
-      {logLevel: 'error'}
+      ['--load-images=yes', '--ssl-protocol=any'].concat(process.env.DEBUG ? '--remote-debugger-port=9000' : []),
+      {logLevel: 'info'}
     );
   }
 
@@ -43,6 +46,8 @@ export class Phantom {
     if (!this.hasPage) {
       const instance : PhantomJS = await this._promise;
       this._page                 = await instance.createPage();
+
+      await this._page.setting('userAgent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36');
       await this._page.property('viewportSize', {width: 1800, height: 1200});
       await this._page.setting('clearMemoryCaches', true);
     }
@@ -57,6 +62,10 @@ export class Phantom {
 
   run<R> (fn : any) {
     return this._page && this._page.evaluate<R>(fn);
+  }
+
+  setProperty (key : string, value : any) {
+    this._page && this.page.property(key, value);
   }
 }
 

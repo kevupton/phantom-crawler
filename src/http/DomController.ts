@@ -6,22 +6,14 @@ export class DomController extends Controller {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
     const fn     = await this.awaitPageLoads();
-    const result = await this.run(`function () {
-      try {
-      
-        var element = document.querySelector('${query}');
-        
-        if (element) {
-          element.click();
-          return true;
-        }
-        
-        return false;
-        
-      } catch (e) {
-        return e;
-      }
-    }`);
+    let result : any = null;
+
+    try {
+      result = await this.browser.page.click(query);
+    }
+    catch (e) {
+      result = e;
+    }
 
     await fn();
 
@@ -31,19 +23,17 @@ export class DomController extends Controller {
   async fill ({inputs}) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
 
-    const result = await this.run(`function () {
+    const result = await this.run((inputs : {[key : string] : string}) => {
       try {
-        var inputs = ${JSON.stringify(inputs)};
-
-        for (var key in inputs) {
-          var element = document.querySelector(key);
+        for (let key in inputs) {
+          const element : any = document.querySelector(key);
           element.value = inputs[key];
         }
 
       } catch (e) {
         return e;
       }
-    }`);
+    }, inputs);
 
     return {result};
   }

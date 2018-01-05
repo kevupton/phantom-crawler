@@ -1,5 +1,6 @@
 import { Controller } from './Controller';
-import { Phantom } from '../system/Phantom';
+import { Phantom } from '../system/browser/Phantom';
+import { Exception } from '../exceptions/Exception';
 
 export class PhantomController extends Controller {
   async active () {
@@ -11,21 +12,27 @@ export class PhantomController extends Controller {
 
   async cookies () {
     return {
-      cookies: await Phantom.instance.getProperty('cookies', null)
+      cookies: await this.browser.page.cookies
     };
   }
 
   async display () {
-    this.response.html(await Phantom.instance.getProperty('content'));
+    this.response.html(await this.browser.content);
   }
 
   async download () {
-    this.response.file(await Phantom.instance.getProperty('content'), 'content.html');
+    this.response.file(await this.browser.content, 'content.html');
   }
 
   async get ({url}) {
-    const {page} = await Phantom.instance.open(url);
-    return await page.property('content');
+    const {page} = await this.browser.open(url);
+    return await page.content();
+  }
+
+  async headers ({headers}) {
+    if (!headers) throw new Exception('Expected headers to be defined', 400);
+
+    this.browser.headers(headers);
   }
 }
 

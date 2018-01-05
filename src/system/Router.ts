@@ -4,10 +4,12 @@ import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
 import { ExceptionHandler } from '../exceptions/ExceptionHandler';
 import { Exception } from '../exceptions/Exception';
+import { Application } from '../App';
 
 export class Router {
   constructor (
-    private app : Express
+    private express : Express,
+    private _app : Application
   ) {}
 
   get (path, controller : typeof Controller, method?) {
@@ -22,14 +24,14 @@ export class Router {
     path = path.replace(/^\s*\/|\/\s*$/, '');
     if (!method) method = path;
 
-    this.app[route](`/${path}`, async (req : Request, res : Response) => {
+    this.express[route](`/${path}`, async (req : Request, res : Response) => {
       const request  = new HTTPRequest(req);
       const response = new HTTPResponse(res);
 
       console.log(`[LOG] Received request for ${path}.`);
 
       try {
-        const ctrl = new controller(request, response);
+        const ctrl = new controller(request, response, this._app);
         let error  = null;
 
         if (typeof ctrl[method] === 'function') {

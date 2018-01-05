@@ -1,3 +1,3 @@
 import { Application } from './App';
 
-const app = new Application();
+Application.instantiate();

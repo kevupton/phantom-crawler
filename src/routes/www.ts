@@ -8,6 +8,7 @@ export function www (router : Router) {
   router.get('download', PhantomController);
   router.get('display', PhantomController);
   router.get('get/:url', PhantomController, 'get');
+  router.post('headers', PhantomController);
 
   // Dom manipulation
   router.post('click', DomController);
