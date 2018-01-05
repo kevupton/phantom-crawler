@@ -78,7 +78,7 @@ export class Chrome {
       await this._page.setViewport({width: 1800, height: 1200});
     }
 
-    const response = await this._page.goto(url);
+    const response = await this._page.goto(url, {'waitUntil' : 'networkidle0'});
 
     if (!response.ok) throw new Error(`${response.status}: Unable to load WebPage. ${response.text()}`);
 
