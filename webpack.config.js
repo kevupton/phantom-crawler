@@ -4,11 +4,12 @@ var fs = require('fs');
 var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  entry: ['babel-polyfill', './src/index.ts'],
+  entry: './src/index.ts',
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'lib'),
-    filename: 'app.js'
+    filename: 'app.js',
+    libraryExport: ''
   },
   module: {
     loaders: [

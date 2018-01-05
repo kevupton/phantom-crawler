@@ -1,6 +1,6 @@
 {
   "name": "phantom-crawler-server",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "Crawl websites with PhantomJS",
   "main": "lib/app.js",
   "scripts": {
@@ -16,6 +16,7 @@
   "author": "Kevin Upton",
   "license": "ISC",
   "devDependencies": {
+    "@types/argparse": "1.0.33",
     "@types/express": "4.0.39",
     "@types/node": "8.0.53",
     "@types/phantom": "3.2.3",
@@ -38,6 +39,7 @@
     "webpack-node-externals": "1.6.0"
   },
   "dependencies": {
+    "argparse": "1.0.9",
     "babel-polyfill": "6.26.0",
     "express": "4.16.2",
     "phantom": "4.0.8",

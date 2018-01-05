@@ -10,18 +10,20 @@ export class Application {
   private static _instance : Application = null;
   private _browser : Chrome = null;
 
-  private constructor () {
+  private constructor (
+    private config
+  ) {
     this.configure();
     this.loadRoutes();
     this.startServer();
   }
 
   static get instance () {
-    return Application._instance || (Application._instance = new Application());
+    return Application._instance;
   }
 
-  static instantiate () {
-    return this.instance;
+  static instantiate (config) {
+    return Application._instance = new Application(config);
   }
 
   get browser () {
@@ -38,8 +40,9 @@ export class Application {
   }
 
   startServer () {
-    const port = process.env.PORT || 3000;
-    this.app.listen(port, () => console.log(`SERVER RUNNING: localhost:${port}`));
+    const port = process.env.PORT || this.config.port || 3000;
+    const host = process.env.HOST || this.config.host || 'localhost';
+    this.app.listen(port, host, () => console.log(`SERVER RUNNING: ${host}:${port}`));
   }
 }
 
