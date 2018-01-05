@@ -3,7 +3,7 @@ import 'babel-polyfill';
 import { ArgumentParser } from 'argparse';
 
 const parser = new ArgumentParser({
-  version: '1.1.3',
+  version: '1.1.4',
   addHelp:true,
   description: 'Phantom Server'
 });

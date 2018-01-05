@@ -12,6 +12,10 @@ export class Chrome {
   private _promise : Promise<Browser>;
   private _page : Page;
 
+  get url () {
+    return this._page && this._page.url();
+  }
+
   get page () {
     return this._page;
   }
@@ -63,6 +67,10 @@ export class Chrome {
     return this._page && this._page.on(eventName, fn);
   }
 
+  once (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
+    return this._page && this._page.once(eventName, fn);
+  }
+
   async open (url : string) : Promise<{ status : number, page : Page }> {
     if (!this.hasPage) {
       const browser = await this._promise;
@@ -78,7 +86,7 @@ export class Chrome {
       await this._page.setViewport({width: 1800, height: 1200});
     }
 
-    const response = await this._page.goto(url, {'waitUntil' : 'networkidle0'});
+    const response = await this._page.goto(url);
 
     if (!response.ok) throw new Error(`${response.status}: Unable to load WebPage. ${response.text()}`);
 
@@ -88,5 +96,13 @@ export class Chrome {
   run<R> (fn : EvaluateFn, ...args : any[]) {
     return this._page && this._page.mainFrame()
       .evaluate(fn, ...args);
+  }
+
+  click (selector : string, options?) {
+    return this._page && this._page.click(selector, options)
+  }
+
+  awaitPageLoad () {
+    return this._page && this._page.waitForNavigation();
   }
 }

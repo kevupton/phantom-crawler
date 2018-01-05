@@ -31,8 +31,13 @@ export class Controller {
     let changing_pages = false;
 
     const deferred = new Deferred();
-    await this.on('request', () => changing_pages = true);
-    await this.on('requestfinished', () => deferred.resolve());
+    const wait = this.browser.awaitPageLoad();
+
+    await this.on('framenavigated', () => {
+
+      changing_pages = true
+    });
+    await this.on('requestfinished', () => changing_pages && deferred.resolve());
 
     return () => {
       setTimeout(() => {
@@ -55,6 +60,15 @@ export class Controller {
     });
 
     return Chrome.instance.on(eventName, fn);
+  }
+
+  once (eventName : keyof PageEventObj, fn : (e: PageEventObj[keyof PageEventObj], ...args: any[]) => void) {
+    this._events.push({
+      eventName,
+      fn
+    });
+
+    return Chrome.instance.once(eventName, fn);
   }
 
   run (fn: EvaluateFn, ...args: any[]) {
