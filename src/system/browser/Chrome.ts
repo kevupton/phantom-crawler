@@ -33,7 +33,8 @@ export class Chrome {
       console.info('[DEBUG] Running Chrome in debug mode')
     }
     this._promise = puppeteer.launch({
-      headless: !process.env.DEBUG
+      headless: !process.env.DEBUG,
+      args: ['--no-sandbox']
     }).then(browser => {
       browser.on('targetdestroyed', async target => {
         const page = await target.page();
