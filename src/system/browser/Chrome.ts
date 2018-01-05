@@ -32,10 +32,14 @@ export class Chrome {
     if (process.env.DEBUG) {
       console.info('[DEBUG] Running Chrome in debug mode')
     }
+
+    console.info('[INFO] Starting Chromium browser');
     this._promise = puppeteer.launch({
       headless: !process.env.DEBUG,
-      args: ['--no-sandbox']
-    }).then(browser => {
+      args: ['--no-sandbox'],
+    }).then(async browser => {
+      console.info('[INFO] Running Chromium browser version: ', await browser.version());
+
       browser.on('targetdestroyed', async target => {
         const page = await target.page();
 
