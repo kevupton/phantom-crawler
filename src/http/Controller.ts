@@ -27,24 +27,24 @@ export class Controller {
     return this._app.browser;
   }
 
-  async awaitPageLoads () : Promise<() => Promise<any>> {
+  async awaitPageLoad () : Promise<() => Promise<any>> {
     let changing_pages = false;
+    const changer = () => changing_pages = true;
 
     const deferred = new Deferred();
-    const wait = this.browser.awaitPageLoad();
 
-    await this.on('framenavigated', () => {
+    deferred.promise.then(()=> this.browser.offPageNavigation(changer));
 
-      changing_pages = true
-    });
+    await this.browser.onPageNavigation(changer);
     await this.on('requestfinished', () => changing_pages && deferred.resolve());
 
     return () => {
-      setTimeout(() => {
-        if (!changing_pages) {
-          deferred.resolve()
+      setTimeout(async () => {
+        if (changing_pages) {
+          await this.browser.awaitPageLoad().catch(() => {});
         }
-      }, 10);
+        deferred.resolve()
+      }, 100);
       return deferred.promise;
     }
   }
@@ -53,7 +53,7 @@ export class Controller {
     this._events.forEach(event => Phantom.instance.off(event.eventName, event.fn));
   }
 
-  on (eventName : keyof PageEventObj, fn : (e: PageEventObj[keyof PageEventObj], ...args: any[]) => void) {
+  on (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
     this._events.push({
       eventName,
       fn
@@ -62,7 +62,7 @@ export class Controller {
     return Chrome.instance.on(eventName, fn);
   }
 
-  once (eventName : keyof PageEventObj, fn : (e: PageEventObj[keyof PageEventObj], ...args: any[]) => void) {
+  once (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
     this._events.push({
       eventName,
       fn
@@ -71,7 +71,7 @@ export class Controller {
     return Chrome.instance.once(eventName, fn);
   }
 
-  run (fn: EvaluateFn, ...args: any[]) {
+  run (fn : EvaluateFn, ...args : any[]) {
     return Chrome.instance.run(fn, ...args);
   }
 }

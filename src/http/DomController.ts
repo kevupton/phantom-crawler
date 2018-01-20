@@ -8,9 +8,9 @@ export class DomController extends Controller {
     let result : any = null;
 
     try {
-      const watch = this.browser.awaitPageLoad().catch(e => console.log('CAUGHT', e));
+      const watch = await this.awaitPageLoad();
       result = await this.browser.click(query);
-      await watch;
+      await watch();
     }
     catch (e) {
       result = e;

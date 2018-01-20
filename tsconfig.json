@@ -5,8 +5,11 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "lib": [
+      "es2017",
       "DOM",
-      "es7"
+      "es7",
+      "es6",
+      "es5"
     ],
     "allowSyntheticDefaultImports": true
   },

@@ -1,8 +1,12 @@
 import * as puppeteer from 'puppeteer';
 import { Browser, EvaluateFn, Page, PageEventObj } from 'puppeteer';
+import { Dispatcher } from '../../lib/dispatcher/dispatcher';
+
+const PAGE_NAVIGATION_EVENT = 'onPageNavigation';
+const PAGE_NAVIGATION_KEY = Symbol();
 
 export class Chrome {
-
+  private _dispatcher = new Dispatcher();
   private static _instance = null;
 
   static get instance () : Chrome {
@@ -71,18 +75,43 @@ export class Chrome {
     return this._page && this._page.once(eventName, fn);
   }
 
+  async makePage () {
+    const browser = await this._promise;
+    const pages = await browser.pages();
+
+    const page = pages.length ? pages[0] : await browser.newPage();
+
+    if (!page[PAGE_NAVIGATION_KEY]) {
+      page[PAGE_NAVIGATION_KEY] = true;
+      await page.evaluateOnNewDocument(name => {
+        window.addEventListener('beforeunload', () => {
+          window[name]();
+        });
+      }, PAGE_NAVIGATION_EVENT);
+    }
+
+    return page;
+  }
+
+  async onPageNavigation (fn : Function) {
+    try {
+      await this._page.exposeFunction(PAGE_NAVIGATION_EVENT, () => {
+        this._dispatcher.trigger(PAGE_NAVIGATION_EVENT);
+      });
+    }
+    catch (e) {
+    }
+
+    this._dispatcher.on(PAGE_NAVIGATION_EVENT, fn);
+  }
+
+  offPageNavigation (fn : Function) {
+    this._dispatcher.remove(PAGE_NAVIGATION_EVENT, fn);
+  }
+
   async open (url : string) : Promise<{ status : number, page : Page }> {
     if (!this.hasPage) {
-      const browser = await this._promise;
-      const pages   = await browser.pages();
-
-      if (!pages.length) {
-        this._page = await browser.newPage();
-      }
-      else {
-        this._page = (await browser.pages())[0];
-      }
-
+      this._page = await this.makePage();
       await this._page.setViewport({width: 1800, height: 1200});
     }
 
@@ -102,7 +131,7 @@ export class Chrome {
     return this._page && this._page.click(selector, options)
   }
 
-  awaitPageLoad () {
-    return this._page && this._page.waitForNavigation();
+  async awaitPageLoad () {
+    return this._page && this._page.waitForNavigation({timeout: 0});
   }
 }
