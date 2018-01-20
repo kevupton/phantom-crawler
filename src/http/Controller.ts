@@ -3,7 +3,7 @@ import { HTTPResponse } from '../system/HTTPResponse';
 import { Phantom } from '../system/browser/Phantom';
 import { Deferred } from '../util/Deferred';
 import { Chrome } from '../system/browser/Chrome';
-import { EvaluateFn, PageEventObj } from 'puppeteer';
+import { EvaluateFn, PageEventObj, Request } from 'puppeteer';
 import { Application } from '../App';
 
 interface IEventStore {
@@ -34,16 +34,15 @@ export class Controller {
     const deferred = new Deferred();
 
     deferred.promise.then(()=> this.browser.offPageNavigation(changer));
-
     await this.browser.onPageNavigation(changer);
-    await this.on('requestfinished', () => changing_pages && deferred.resolve());
+    const watch = this.browser.awaitPageLoad().catch(() => {});
 
     return () => {
       setTimeout(async () => {
         if (changing_pages) {
-          await this.browser.awaitPageLoad().catch(() => {});
+          await watch;
         }
-        deferred.resolve()
+        deferred.resolve();
       }, 100);
       return deferred.promise;
     }

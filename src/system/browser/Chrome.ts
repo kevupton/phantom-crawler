@@ -132,6 +132,6 @@ export class Chrome {
   }
 
   async awaitPageLoad () {
-    return this._page && this._page.waitForNavigation({timeout: 0});
+    return this._page && this._page.waitForNavigation({timeout: 120000});
   }
 }
