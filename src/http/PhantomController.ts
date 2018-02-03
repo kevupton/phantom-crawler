@@ -20,6 +20,10 @@ export class PhantomController extends Controller {
     this.response.html(await this.browser.content);
   }
 
+  async active_url () {
+    return {url: this.browser.url || null};
+  }
+
   async download () {
     this.response.file(await this.browser.content, 'content.html');
   }

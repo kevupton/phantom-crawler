@@ -25,7 +25,7 @@ export class Chrome {
   }
 
   get hasPage () {
-    return this._page;
+    return !!this._page;
   }
 
   get content () {
@@ -44,6 +44,7 @@ export class Chrome {
     const args = ['--no-sandbox'];
 
     if (process.env.PROXY) {
+      console.info('[INFO] Running Chrome on proxy '  + process.env.PROXY);
       args.push('--proxy-server=' + process.env.PROXY)
     }
 
