@@ -3,7 +3,7 @@ import 'babel-polyfill';
 import { ArgumentParser } from 'argparse';
 
 const parser = new ArgumentParser({
-  version: '1.1.4',
+  version: '1.1.8',
   addHelp:true,
   description: 'Phantom Server'
 });
@@ -19,6 +19,13 @@ parser.addArgument(
   [ '-P', '--port' ],
   {
     help: 'The port that the server should listen to'
+  }
+);
+
+parser.addArgument(
+  [ '--proxy' ],
+  {
+    help: 'The proxy server'
   }
 );
 

@@ -41,10 +41,16 @@ export class Chrome {
       console.info('[DEBUG] Running Chrome in debug mode')
     }
 
+    const args = ['--no-sandbox'];
+
+    if (process.env.PROXY) {
+      args.push('--proxy-server=' + process.env.PROXY)
+    }
+
     console.info('[INFO] Starting Chromium browser');
     this._promise = puppeteer.launch({
       headless: !process.env.DEBUG,
-      args: ['--no-sandbox'],
+      args: args,
     }).then(async browser => {
       console.info('[INFO] Running Chromium browser version: ', await browser.version());
 

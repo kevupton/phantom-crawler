@@ -13,6 +13,12 @@ export class Application {
   private constructor (
     private config
   ) {
+    Object.keys(config).forEach(key => {
+      if (config[key]) {
+        process.env[key.toUpperCase()] = config[key]
+      }
+    });
+
     this.configure();
     this.loadRoutes();
     this.startServer();
@@ -40,8 +46,8 @@ export class Application {
   }
 
   startServer () {
-    const port = process.env.PORT || this.config.port || 3000;
-    const host = process.env.HOST || this.config.host || 'localhost';
+    const port = parseInt(process.env.PORT, 10) || 3000;
+    const host = process.env.HOST || 'localhost';
     this.app.listen(port, host, () => console.log(`SERVER RUNNING: ${host}:${port}`));
   }
 }
