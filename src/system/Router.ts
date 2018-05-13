@@ -28,7 +28,9 @@ export class Router {
       const request  = new HTTPRequest(req);
       const response = new HTTPResponse(res);
 
-      console.log(`[LOG] Received request for ${path}.`);
+      if (this._app.isDebug) {
+        console.log(`[LOG] Received request for ${path}.`);
+      }
 
       try {
         const ctrl = new controller(request, response, this._app);

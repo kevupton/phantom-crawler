@@ -10,6 +10,10 @@ export class Application {
   private static _instance : Application = null;
   private _browser : Chrome = null;
 
+  get isDebug () {
+    return !!(this.config.debug || process.env.DEBUG);
+  }
+
   private constructor (
     private config
   ) {

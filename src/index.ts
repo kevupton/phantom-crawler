@@ -29,6 +29,13 @@ parser.addArgument(
   }
 );
 
+parser.addArgument(
+  [ '--debug' ],
+  {
+    help: 'The proxy server'
+  }
+);
+
 const args = parser.parseArgs();
 
 Application.instantiate(args);

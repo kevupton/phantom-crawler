@@ -7,7 +7,7 @@ export class ExceptionHandler {
     private request : HTTPRequest,
     private response : HTTPResponse
   ) {
-    console.log(`[ERROR]: Uncaught '${error.name}': ${error.message}`);
+    console.error(`[ERROR]: Uncaught '${error.name}': ${error.message}`);
     console.error(error);
     response.error(error);
   }

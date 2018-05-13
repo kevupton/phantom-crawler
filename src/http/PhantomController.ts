@@ -16,6 +16,10 @@ export class PhantomController extends Controller {
     };
   }
 
+  async back () {
+    return await this.browser.page.goBack();
+  }
+
   async display () {
     this.response.html(await this.browser.content);
   }

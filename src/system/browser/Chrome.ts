@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer';
-import { Browser, EvaluateFn, Page, PageEventObj } from 'puppeteer';
+import { Browser, ClickOptions, EvaluateFn, Page, PageEventObj } from 'puppeteer';
 import { Dispatcher } from '../../lib/dispatcher/dispatcher';
 
 const PAGE_NAVIGATION_EVENT = 'onPageNavigation';
@@ -126,7 +126,7 @@ export class Chrome {
 
     if (!response.ok) throw new Error(`${response.status}: Unable to load WebPage. ${response.text()}`);
 
-    return {status: response.status, page: this._page};
+    return {status: response.status(), page: this._page};
   }
 
   run<R> (fn : EvaluateFn, ...args : any[]) {
@@ -134,8 +134,32 @@ export class Chrome {
       .evaluate(fn, ...args);
   }
 
-  click (selector : string, options?) {
-    return this._page && this._page.click(selector, options)
+  async click (selector : string, options? : ClickOptions, xpath = false) {
+    if (!this._page) {
+      return;
+    }
+
+    if (xpath) {
+      const items = await this._page.$x(selector);
+      return items.length && items[0].click(options) || null;
+    }
+    return this._page.click(selector, options);
+  }
+
+  async hover (selector: string, xpath = false) {
+    if (!this._page) {
+      return;
+    }
+
+    if (xpath) {
+      const element = await this._page.$x(selector);
+      return element.length && element[0].hover();
+    }
+    return this._page.hover(selector);
+  }
+
+  async type (selector: string, text : string, options : {delay: number} = {delay: 20}) {
+    return this._page && this._page.type(selector, text, options);
   }
 
   async awaitPageLoad () {
