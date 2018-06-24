@@ -166,40 +166,32 @@ export class Chrome {
     return this._page && this._page.waitForNavigation({timeout: 120000});
   }
 
-  async scrollTo (query : string, xpath = false) {
+  async scrollTo (query : string) {
     if (!this._page) {
       return;
     }
 
-    return this._page.evaluate(`(function (query, xpath) {
-      let item = null;
-      if (xpath) {
-        const items = $x(query);
-        if (items.length) {
-          item = items[0];
-        }
-      }
-      else {
-        item = document.querySelector(query);
-      }
-
-      return new Promise(res => {
-        if (!item) {
-          res(false);
-          return;
-        }
+    return this._page.evaluate(`(() => {
+        const query = ${JSON.stringify(query)};
+        let item = document.querySelector(query);
         
-        const bounds = item.getBoundingClientRect();
-        item.scrollIntoView({block: 'start', behavior: 'smooth'});
-        setTimeout(() => {
-          if (bounds.top !== item.getBoundingClientRect().top) {
-            res(true);
+        return new Promise(res => {
+          if (!item) {
+            res('no item');
+            return;
           }
-          else {
-            res(false);
-          }
-        }, 500);
-      });
-    })()`, query, xpath)
+          
+          const bounds = item.getBoundingClientRect();
+          item.scrollIntoView({block: 'start', behavior: 'smooth'});
+          setTimeout(() => {
+            if (bounds.top !== item.getBoundingClientRect().top) {
+              res(true);
+            }
+            else {
+              res('rectangle didnt move');
+            }
+          }, 500);
+        });
+      })()`);
   }
 }
