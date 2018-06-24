@@ -38,6 +38,12 @@ export class DomController extends Controller {
     return {result};
   }
 
+  async scrollTo ({ query }) {
+    if (!query) throw new Exception('Expected query to be defined', 400);
+
+    await this.browser.scrollTo(query);
+  }
+
   async type ({inputs, delay}) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
     delay = delay || 20;

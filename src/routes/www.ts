@@ -17,4 +17,5 @@ export function www (router : Router) {
   router.post('fill', DomController);
   router.post('type', DomController);
   router.post('hover', DomController);
+  router.post('scrollTo', DomController);
 }

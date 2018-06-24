@@ -165,4 +165,27 @@ export class Chrome {
   async awaitPageLoad () {
     return this._page && this._page.waitForNavigation({timeout: 120000});
   }
+
+  async scrollTo (query : string, xpath = false) {
+    if (!this._page) {
+      return;
+    }
+
+    return this._page.mainFrame().evaluate(function (query, xpath) {
+      let item = null;
+      if (xpath) {
+        const items = $x(query);
+        if (items.length) {
+          item = items[0];
+        }
+      }
+      else {
+        item = document.querySelector(query);
+      }
+
+      if (item) {
+        item.scrollIntoView({block: 'start', behavior: 'smooth'});
+      }
+    }, query, xpath)
+  }
 }
