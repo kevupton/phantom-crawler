@@ -1,30 +1,30 @@
-import { Controller } from './Controller';
 import { Exception } from '../exceptions/Exception';
+import { Controller } from './Controller';
 
 export class DomController extends Controller {
-  async click ({query, button, xpath}) {
+  async click ({ query, button, xpath }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
     let result : any = null;
 
     button = button || 'left';
-    if (!['left', 'right', 'middle'].includes(button)) {
+    if (![ 'left', 'right', 'middle' ].includes(button)) {
       throw new Exception('Invalid button type. Expected left, right or middle', 400);
     }
 
     try {
       const watch = await this.awaitPageLoad();
-      result = await this.browser.click(query, {button}, xpath);
+      result      = await this.browser.click(query, { button }, xpath);
       await watch();
     }
     catch (e) {
       result = e;
     }
 
-    return {result};
+    return { result };
   }
 
-  async hover ({query, xpath}) {
+  async hover ({ query, xpath }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
     let result : any = null;
@@ -35,16 +35,18 @@ export class DomController extends Controller {
       result = e;
     }
 
-    return {result};
+    return { result };
   }
 
-  async scrollTo ({ query }) {
+  async scrollTo ({ query, xpath }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
-    await this.browser.scrollTo(query);
+    const result = await this.browser.scrollTo(query, xpath);
+
+    return { result };
   }
 
-  async type ({inputs, delay}) {
+  async type ({ inputs, delay }) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
     delay = delay || 20;
 
@@ -52,20 +54,20 @@ export class DomController extends Controller {
     const results = {};
 
     for (let query of queries) {
-      results[query] = await this.browser.type(query, inputs[query], {delay});
+      results[ query ] = await this.browser.type(query, inputs[ query ], { delay });
     }
 
-    return {results};
+    return { results };
   }
 
-  async fill ({inputs}) {
+  async fill ({ inputs }) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
 
     const result = await this.run((inputs : { [key : string] : string }) => {
       try {
         for (let key in inputs) {
           const element : any = document.querySelector(key);
-          element.value       = inputs[key];
+          element.value       = inputs[ key ];
         }
 
       }
@@ -74,10 +76,10 @@ export class DomController extends Controller {
       }
     }, inputs);
 
-    return {result};
+    return { result };
   }
 
-  async rightClick ({query}) {
+  async rightClick ({ query }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
     let result : any = null;
@@ -91,6 +93,6 @@ export class DomController extends Controller {
       result = e;
     }
 
-    return {result};
+    return { result };
   }
 }

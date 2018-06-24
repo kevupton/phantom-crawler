@@ -171,7 +171,7 @@ export class Chrome {
       return;
     }
 
-    return this._page.mainFrame().evaluate(function (query, xpath) {
+    return this._page.evaluate(`(function (query, xpath) {
       let item = null;
       if (xpath) {
         const items = $x(query);
@@ -183,9 +183,23 @@ export class Chrome {
         item = document.querySelector(query);
       }
 
-      if (item) {
+      return new Promise(res => {
+        if (!item) {
+          res(false);
+          return;
+        }
+        
+        const bounds = item.getBoundingClientRect();
         item.scrollIntoView({block: 'start', behavior: 'smooth'});
-      }
-    }, query, xpath)
+        setTimeout(() => {
+          if (bounds.top !== item.getBoundingClientRect().top) {
+            res(true);
+          }
+          else {
+            res(false);
+          }
+        }, 500);
+      });
+    })()`, query, xpath)
   }
 }
