@@ -38,10 +38,20 @@ export class DomController extends Controller {
     return { result };
   }
 
-  async scrollTo ({ query, xpath }) {
+  async scrollTop ({ query, top }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
-    const result = await this.browser.scrollTo(query, xpath);
+    top = top || 0;
+
+    const result  = await this.browser.scrollTop(query, top);
+
+    return { result };
+  }
+
+  async scrollTo ({ query }) {
+    if (!query) throw new Exception('Expected query to be defined', 400);
+
+    const result = await this.browser.scrollTo(query);
 
     return { result };
   }

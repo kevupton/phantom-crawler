@@ -41,7 +41,7 @@ export class Chrome {
       console.info('[DEBUG] Running Chrome in debug mode')
     }
 
-    const args = ['--no-sandbox'];
+    const args = ['--no-sandbox', '--disable-dev-shm-usage'];
 
     if (process.env.PROXY) {
       console.info('[INFO] Running Chrome on proxy '  + process.env.PROXY);
@@ -166,32 +166,55 @@ export class Chrome {
     return this._page && this._page.waitForNavigation({timeout: 120000});
   }
 
+  async scrollTop (query : string, top : number) {
+    if (!this._page) {
+      return;
+    }
+
+    return this._page.evaluate(`(() => {
+      const top = ${JSON.stringify(top)};
+      const item = document.querySelector(${JSON.stringify(query)});
+      
+      if (!item) {
+        return false;
+      }
+      
+      item.scrollTop = top;
+      return true;
+    })()`);
+  }
+
   async scrollTo (query : string) {
     if (!this._page) {
       return;
     }
 
     return this._page.evaluate(`(() => {
-        const query = ${JSON.stringify(query)};
-        let item = document.querySelector(query);
+      const query = ${JSON.stringify(query)};
+      let item = document.querySelector(query);
+      
+      return new Promise(res => {
+        if (!item) {
+          res({ error: 'No item found', scrolled: false });
+          return;
+        }
         
-        return new Promise(res => {
-          if (!item) {
-            res('no item');
-            return;
+        const bounds = item.getBoundingClientRect();
+        item.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        setTimeout(() => {
+          if (bounds.top !== item.getBoundingClientRect().top) {
+            try {
+              res({ scrolled: true, scrollTop: item.parentNode.scrollTop });
+            }
+            catch (e) {
+              res({ scrolled: true, error: e + "" });
+            }
           }
-          
-          const bounds = item.getBoundingClientRect();
-          item.scrollIntoView({block: 'start', behavior: 'smooth'});
-          setTimeout(() => {
-            if (bounds.top !== item.getBoundingClientRect().top) {
-              res(true);
-            }
-            else {
-              res('rectangle didnt move');
-            }
-          }, 500);
-        });
-      })()`);
+          else {
+            res({ scrolled: false, error: 'Already at bottom' });
+          }
+        }, 500);
+      });
+    })()`);
   }
 }
