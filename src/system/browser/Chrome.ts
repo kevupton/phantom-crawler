@@ -191,7 +191,8 @@ export class Chrome {
 
     return this._page.evaluate(`(() => {
       const query = ${JSON.stringify(query)};
-      let item = document.querySelector(query);
+      const item = document.querySelector(query);
+      const parent = item.parentElement;
       
       return new Promise(res => {
         if (!item) {
@@ -204,10 +205,10 @@ export class Chrome {
         setTimeout(() => {
           if (bounds.top !== item.getBoundingClientRect().top) {
             try {
-              res({ scrolled: true, scrollTop: item.parentNode.scrollTop });
+              res({ scrolled: true, scrollTop: parent.scrollTop });
             }
             catch (e) {
-              res({ scrolled: true, error: e + "" });
+              res({ scrolled: true, error: e + "", t });
             }
           }
           else {
