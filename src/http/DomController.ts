@@ -56,6 +56,14 @@ export class DomController extends Controller {
     return { result };
   }
 
+  async focus ({ query, xpath, tabIndex }) {
+    if (!query) throw new Exception('Expected query to be defined', 400);
+
+    const result = await this.browser.focus(query, xpath, tabIndex);
+
+    return { result };
+  }
+
   async type ({ inputs, delay, tabIndex }) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
     delay = delay || 20;

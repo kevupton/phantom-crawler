@@ -211,6 +211,16 @@ export class Chrome {
     return this.page.hover(selector);
   }
 
+  async focus (selector : string, xpath = false, tabIndex = this._activePageTab) {
+    const page = this._pages[tabIndex];
+
+    if (xpath) {
+      const element = await page.$x(selector);
+      return element.length && element[0].focus();
+    }
+    await page.focus(selector);
+  }
+
   async type (selector : string, text : string, options : { delay : number } = { delay: 20 }, tabIndex = this._activePageTab) {
     const page = this._pages[tabIndex];
     return page && page.type(selector, text, options);
