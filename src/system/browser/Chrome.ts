@@ -55,7 +55,7 @@ export class Chrome {
 
     console.info('[INFO] Starting Chromium browser');
     this._browser = puppeteer.launch({
-      headless: !process.env.DEBUG,
+      headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
       args: args,
     })
       .then(async browser => {
