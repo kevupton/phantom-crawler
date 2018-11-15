@@ -7,9 +7,10 @@ export function www (router : Router) {
   router.get('active_url', PhantomController);
   router.get('cookies', PhantomController);
   router.get('download', PhantomController);
+  router.get('display/:index', PhantomController);
   router.get('display', PhantomController);
   router.get('back', PhantomController);
-  router.get('get/:url', PhantomController, 'get');
+  router.get('get/:url', PhantomController);
   router.get('getTabs', PhantomController);
   router.post('headers', PhantomController);
   router.post('setActiveTab', PhantomController);

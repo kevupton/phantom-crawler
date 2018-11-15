@@ -20,8 +20,8 @@ export class PhantomController extends Controller {
     return await this.browser.page.goBack();
   }
 
-  async display () {
-    this.response.html(await this.browser.content);
+  async display ({ index }) {
+    this.response.html(await this.browser.getContent(index));
   }
 
   async active_url () {

@@ -22,7 +22,7 @@ export class Router {
 
   private call (route, path, controller : typeof Controller, method?) {
     path = path.replace(/^\s*\/|\/\s*$/, '');
-    if (!method) method = path;
+    if (!method) method = path.split('/')[0];
 
     this.express[route](`/${path}`, async (req : Request, res : Response) => {
       const request  = new HTTPRequest(req);

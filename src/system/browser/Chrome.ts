@@ -3,18 +3,18 @@ import { Browser, ClickOptions, EvaluateFn, Page, PageEventObj } from 'puppeteer
 import { Dispatcher } from '../../lib/dispatcher/dispatcher';
 
 const PAGE_NAVIGATION_EVENT = 'onPageNavigation';
-const PAGE_NAVIGATION_KEY = Symbol();
+const PAGE_NAVIGATION_KEY   = Symbol();
 
 export class Chrome {
-  private _dispatcher = new Dispatcher();
   private static _instance = null;
 
   static get instance () : Chrome {
     return this._instance || (this._instance = new Chrome());
   }
 
+  private _dispatcher      = new Dispatcher();
   private _browser : Promise<Browser>;
-  private _activePageTab = 0;
+  private _activePageTab  = 0;
   private _pages : Page[] = [];
 
   get page () {
@@ -49,7 +49,7 @@ export class Chrome {
     const args = ['--no-sandbox', '--disable-dev-shm-usage'];
 
     if (process.env.PROXY) {
-      console.info('[INFO] Running Chrome on proxy '  + process.env.PROXY);
+      console.info('[INFO] Running Chrome on proxy ' + process.env.PROXY);
       args.push('--proxy-server=' + process.env.PROXY)
     }
 
@@ -57,25 +57,37 @@ export class Chrome {
     this._browser = puppeteer.launch({
       headless: !process.env.DEBUG,
       args: args,
-    }).then(async browser => {
-      console.info('[INFO] Running Chromium browser version: ', await browser.version());
+    })
+      .then(async browser => {
+        console.info('[INFO] Running Chromium browser version: ', await browser.version());
 
-      browser.on('targetdestroyed', async target => {
-        const page = await target.page();
+        browser.on('targetdestroyed', async target => {
+          const page = await target.page();
 
-        if (page === this.page) {
-          this._pages.splice(this._activePageTab, 1);
+          if (page === this.page) {
+            this._pages.splice(this._activePageTab, 1);
+          }
+        });
+
+        this._pages = await browser.pages();
+
+        for (let i = 0; i < this._pages.length; i++) {
+          await this.setViewport(this._pages[i]);
         }
+
+        return browser;
       });
+  }
 
-      this._pages = await browser.pages();
-
-      for (let i = 0; i < this._pages.length; i++) {
-        await this.setViewport(this._pages[i]);
+  getContent (index ? : number) {
+    if (index) {
+      if (this._pages[index]) {
+        return this._pages[index].content();
       }
+      return null;
+    }
 
-      return browser;
-    });
+    return this.content;
   }
 
   headers (extra) {
@@ -113,16 +125,15 @@ export class Chrome {
   async open (url : string) : Promise<{ status : number, page : Page }> {
     await this._browser;
 
-    console.log(this._pages.length);
     if (!this.hasPage) {
       await this.openNewTab();
     }
 
-    const response = await this.page.goto(url, {timeout: 120000});
+    const response = await this.page.goto(url, { timeout: 120000 });
 
     if (!response.ok) throw new Error(`${response.status}: Unable to load WebPage. ${response.text()}`);
 
-    return {status: response.status(), page: this.page};
+    return { status: response.status(), page: this.page };
   }
 
   run<R> (fn : EvaluateFn, ...args : any[]) {
@@ -130,21 +141,23 @@ export class Chrome {
       .evaluate(fn, ...args);
   }
 
-  async click (selector : string, options? : ClickOptions, xpath = false) {
-    if (!this.page) {
+  async click (selector : string, options? : ClickOptions, xpath = false, tabIndex : number = this._activePageTab) {
+    const page = this._pages[tabIndex];
+
+    if (!page) {
       return;
     }
 
     if (xpath) {
-      const items = await this.page.$x(selector);
+      const items = await page.$x(selector);
       return items.length && items[0].click(options) || null;
     }
-    return this.page.click(selector, options);
+    return page.click(selector, options);
   }
 
   async openNewTab () {
     const browser = await this._browser;
-    const page = await browser.newPage();
+    const page    = await browser.newPage();
 
     if (!page[PAGE_NAVIGATION_KEY]) {
       page[PAGE_NAVIGATION_KEY] = true;
@@ -162,12 +175,7 @@ export class Chrome {
     return index;
   }
 
-  private async setViewport(page : Page) {
-    await page.setViewport({width: 1800, height: 1200});
-    return page;
-  }
-
-  async setActiveTab(index) {
+  async setActiveTab (index) {
     if (!this._pages[index]) {
       return;
     }
@@ -175,7 +183,7 @@ export class Chrome {
     this._activePageTab = index;
   }
 
-  async closeTabIndex(index) {
+  async closeTabIndex (index) {
     if (!this._pages[index]) {
       return;
     }
@@ -188,7 +196,7 @@ export class Chrome {
     }
   }
 
-  async hover (selector: string, xpath = false) {
+  async hover (selector : string, xpath = false) {
     if (!this.page) {
       return;
     }
@@ -200,12 +208,12 @@ export class Chrome {
     return this.page.hover(selector);
   }
 
-  async type (selector: string, text : string, options : {delay: number} = {delay: 20}) {
+  async type (selector : string, text : string, options : { delay : number } = { delay: 20 }) {
     return this.page && this.page.type(selector, text, options);
   }
 
   async awaitPageLoad () {
-    return this.page && this.page.waitForNavigation({timeout: 120000});
+    return this.page && this.page.waitForNavigation({ timeout: 120000 });
   }
 
   async scrollTop (query : string, top : number) {
@@ -259,5 +267,10 @@ export class Chrome {
         }, 500);
       });
     })()`);
+  }
+
+  private async setViewport (page : Page) {
+    await page.setViewport({ width: 1800, height: 1200 });
+    return page;
   }
 }
