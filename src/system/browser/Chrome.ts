@@ -214,6 +214,10 @@ export class Chrome {
   async focus (selector : string, xpath = false, tabIndex = this._activePageTab) {
     const page = this._pages[tabIndex];
 
+    if (!page) {
+      return;
+    }
+
     if (xpath) {
       const element = await page.$x(selector);
       return element.length && element[0].focus();
