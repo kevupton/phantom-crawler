@@ -56,7 +56,7 @@ export class DomController extends Controller {
     return { result };
   }
 
-  async type ({ inputs, delay }) {
+  async type ({ inputs, delay, tabIndex }) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
     delay = delay || 20;
 
@@ -64,7 +64,7 @@ export class DomController extends Controller {
     const results = {};
 
     for (let query of queries) {
-      results[ query ] = await this.browser.type(query, inputs[ query ], { delay });
+      results[ query ] = await this.browser.type(query, inputs[ query ], { delay }, tabIndex);
     }
 
     return { results };

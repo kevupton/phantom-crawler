@@ -138,7 +138,10 @@ export class Chrome {
 
   run<R> (fn : EvaluateFn, ...args : any[]) {
     return this.page && this.page.mainFrame()
-      .evaluate(fn, ...args);
+      .evaluate(fn, ...args)
+      .catch(e => {
+        console.error(e);
+      });
   }
 
   async click (selector : string, options? : ClickOptions, xpath = false, tabIndex : number = this._activePageTab) {
@@ -208,8 +211,9 @@ export class Chrome {
     return this.page.hover(selector);
   }
 
-  async type (selector : string, text : string, options : { delay : number } = { delay: 20 }) {
-    return this.page && this.page.type(selector, text, options);
+  async type (selector : string, text : string, options : { delay : number } = { delay: 20 }, tabIndex = this._activePageTab) {
+    const page = this._pages[tabIndex];
+    return page && page.type(selector, text, options);
   }
 
   async awaitPageLoad () {
