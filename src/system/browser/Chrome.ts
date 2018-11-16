@@ -184,6 +184,7 @@ export class Chrome {
     }
 
     this._activePageTab = index;
+    await this.page.bringToFront();
   }
 
   async closeTabIndex (index) {
