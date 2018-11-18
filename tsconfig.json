@@ -11,7 +11,10 @@
       "es6",
       "es5"
     ],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "sourceMap": true,
+    "declarationDir": "./"
   },
   "files": [
     "src/index.d.ts",

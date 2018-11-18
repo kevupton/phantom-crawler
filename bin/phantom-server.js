@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-require('../lib/app.js');
+require('../lib/app.js').run();

@@ -3,7 +3,7 @@ import { HTTPResponse } from '../system/HTTPResponse';
 import { Phantom } from '../system/browser/Phantom';
 import { Deferred } from '../util/Deferred';
 import { Chrome } from '../system/browser/Chrome';
-import { EvaluateFn, PageEventObj, Request } from 'puppeteer';
+import { EvaluateFn, Page, PageEventObj } from 'puppeteer';
 import { Application } from '../App';
 
 interface IEventStore {
@@ -52,7 +52,7 @@ export class Controller {
     this._events.forEach(event => Phantom.instance.off(event.eventName, event.fn));
   }
 
-  on (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
+  on (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) : Page {
     this._events.push({
       eventName,
       fn
@@ -61,7 +61,7 @@ export class Controller {
     return Chrome.instance.on(eventName, fn);
   }
 
-  once (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
+  once (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) : Page {
     this._events.push({
       eventName,
       fn

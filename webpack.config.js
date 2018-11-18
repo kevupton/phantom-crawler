@@ -9,7 +9,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'lib'),
     filename: 'app.js',
-    libraryExport: ''
+    libraryExport: '',
+    library: '',
+    libraryTarget: 'commonjs'
   },
   module: {
     loaders: [
