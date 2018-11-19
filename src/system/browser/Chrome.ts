@@ -192,6 +192,10 @@ export class Chrome {
       return;
     }
 
+    if (this._pages.length === 1) {
+      await this.openNewTab();
+    }
+
     const page = this._pages.splice(index, 1)[0];
     await page.close();
 
