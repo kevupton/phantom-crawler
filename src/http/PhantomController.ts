@@ -19,6 +19,10 @@ export class PhantomController extends Controller {
     };
   }
 
+  async reset () {
+    return await this.browser.reset();
+  }
+
   async back () : Promise<Response | null> {
     return await this.browser.page.goBack();
   }

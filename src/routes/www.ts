@@ -16,6 +16,7 @@ export function www (router : Router) {
   router.post('setActiveTab', PhantomController);
   router.post('openNewTab', PhantomController);
   router.post('closeTab', PhantomController);
+  router.post('reset', PhantomController);
 
   // Dom manipulation
   router.post('click', DomController);
