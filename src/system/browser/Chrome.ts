@@ -12,8 +12,8 @@ export class Chrome {
     return this._instance || (this._instance = new Chrome());
   }
 
-  private _dispatcher      = new Dispatcher();
-  private _browser : Promise<Browser>;
+  private _dispatcher     = new Dispatcher();
+  private _browser : Promise<Browser> | null;
   private _activePageTab  = 0;
   private _pages : Page[] = [];
 
@@ -41,7 +41,16 @@ export class Chrome {
     return this.page && this.page.cookies();
   }
 
-  private constructor () {
+  private async getBrowser() : Promise<Browser> {
+    const browser = await this._browser;
+    if (!browser) {
+      this.createNewBrowser();
+      return await this._browser;
+    }
+    return browser;
+  }
+
+  private createNewBrowser () {
     if (process.env.DEBUG) {
       console.info('[DEBUG] Running Chrome in debug mode')
     }
@@ -54,9 +63,10 @@ export class Chrome {
     }
 
     console.info('[INFO] Starting Chromium browser');
+
     this._browser = puppeteer.launch({
       headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
-      args: args,
+      args: args
     })
       .then(async browser => {
         console.info('[INFO] Running Chromium browser version: ', await browser.version());
@@ -106,6 +116,14 @@ export class Chrome {
     return this.page && this.page.once(eventName, fn);
   }
 
+  async reset () {
+    const browser = await this.getBrowser();
+    await browser.close();
+    this._browser = null;
+    this._pages = [];
+    this._activePageTab = 0;
+  }
+
   async onPageNavigation (fn : Function) {
     try {
       await this.page.exposeFunction(PAGE_NAVIGATION_EVENT, () => {
@@ -123,17 +141,17 @@ export class Chrome {
   }
 
   async open (url : string) : Promise<{ status : number, page : Page }> {
-    await this._browser;
+    await this.getBrowser();
 
     if (!this.hasPage) {
       await this.openNewTab();
     }
 
-    const response = await this.page.goto(url, { timeout: 120000 });
+    const response = await this.page.goto(url, {timeout: 120000});
 
     if (!response.ok) throw new Error(`${response.status}: Unable to load WebPage. ${response.text()}`);
 
-    return { status: response.status(), page: this.page };
+    return {status: response.status(), page: this.page};
   }
 
   run<R> (fn : EvaluateFn, ...args : any[]) {
@@ -159,7 +177,7 @@ export class Chrome {
   }
 
   async openNewTab () {
-    const browser = await this._browser;
+    const browser = await this.getBrowser();
     const page    = await browser.newPage();
 
     if (!page[PAGE_NAVIGATION_KEY]) {
@@ -193,7 +211,8 @@ export class Chrome {
     }
 
     if (this._pages.length === 1) {
-      await this.openNewTab();
+      await this.reset();
+      return;
     }
 
     const page = this._pages.splice(index, 1)[0];
@@ -230,13 +249,18 @@ export class Chrome {
     await page.focus(selector);
   }
 
-  async type (selector : string, text : string, options : { delay : number } = { delay: 20 }, tabIndex = this._activePageTab) {
+  async type (
+    selector : string,
+    text : string,
+    options : { delay : number } = {delay: 20},
+    tabIndex = this._activePageTab
+  ) {
     const page = this._pages[tabIndex];
     return page && page.type(selector, text, options);
   }
 
   async awaitPageLoad () {
-    return this.page && this.page.waitForNavigation({ timeout: 120000 });
+    return this.page && this.page.waitForNavigation({timeout: 120000});
   }
 
   async scrollTop (query : string, top : number) {
@@ -293,7 +317,7 @@ export class Chrome {
   }
 
   private async setViewport (page : Page) {
-    await page.setViewport({ width: 1800, height: 1200 });
+    await page.setViewport({width: 1800, height: 1200});
     return page;
   }
 }
