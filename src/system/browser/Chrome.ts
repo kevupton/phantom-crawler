@@ -55,7 +55,10 @@ export class Chrome {
       console.info('[DEBUG] Running Chrome in debug mode')
     }
 
-    const args = ['--no-sandbox', '--disable-dev-shm-usage'];
+    const args = [
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+    ];
 
     if (process.env.PROXY) {
       console.info('[INFO] Running Chrome on proxy ' + process.env.PROXY);
@@ -88,7 +91,7 @@ export class Chrome {
         return browser;
       })
       .catch(e => {
-        console.error(e);
+        console.error('New Browser Method error', e);
         return null;
       });
   }
@@ -167,7 +170,7 @@ export class Chrome {
     return this.page && this.page.mainFrame()
       .evaluate(fn, ...args)
       .catch(e => {
-        console.error(e);
+        console.error('Run Method Error', e);
       });
   }
 
@@ -195,7 +198,10 @@ export class Chrome {
         window.addEventListener('beforeunload', () => {
           window[name]();
         });
-      }, PAGE_NAVIGATION_EVENT);
+      }, PAGE_NAVIGATION_EVENT)
+        .catch(err => {
+          console.error('OpenNewTab Method Error', err);
+        });
     }
 
     await this.setViewport(page);
@@ -287,7 +293,10 @@ export class Chrome {
       
       item.scrollTop = top;
       return true;
-    })()`);
+    })()`)
+      .catch(err => {
+        console.error('ScrollTop Method Error', err);
+      });
   }
 
   async scrollTo (query : string) {
@@ -322,7 +331,10 @@ export class Chrome {
           }
         }, 500);
       });
-    })()`);
+    })()`)
+      .catch(err => {
+        console.error('ScrollTo Method Error', err);
+      });;
   }
 
   private async setViewport (page : Page) {
