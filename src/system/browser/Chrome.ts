@@ -86,6 +86,10 @@ export class Chrome {
         }
 
         return browser;
+      })
+      .catch(e => {
+        console.error(e);
+        return null;
       });
   }
 
@@ -117,7 +121,12 @@ export class Chrome {
   }
 
   async reset () {
-    const browser = await this.getBrowser();
+    const browser = await this._browser;
+
+    if (!browser) {
+      return;
+    }
+
     await browser.close();
     this._browser = null;
     this._pages = [];
