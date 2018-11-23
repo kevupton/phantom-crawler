@@ -75,10 +75,14 @@ export class Chrome {
         console.info('[INFO] Running Chromium browser version: ', await browser.version());
 
         browser.on('targetdestroyed', async target => {
-          const page = await target.page();
-
-          if (page === this.page) {
-            this._pages.splice(this._activePageTab, 1);
+          try  {
+            const page = await target.page();
+            if (page === this.page) {
+              this._pages.splice(this._activePageTab, 1);
+            }
+          }
+          catch(e) {
+            console.error('rip', e);
           }
         });
 
