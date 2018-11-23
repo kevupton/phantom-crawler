@@ -130,7 +130,13 @@ export class Chrome {
       return;
     }
 
-    await browser.close();
+    try {
+      await browser.close();
+    }
+    catch(e) {
+      console.error(e);
+    }
+
     this._browser = null;
     this._pages = [];
     this._activePageTab = 0;
