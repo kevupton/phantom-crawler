@@ -124,7 +124,13 @@ export class Chrome {
   }
 
   async reset () {
-    const browser = await this._browser;
+    const promise = this._browser;
+
+    this._browser = null;
+    this._pages = [];
+    this._activePageTab = 0;
+
+    const browser = await promise;
 
     if (!browser) {
       return;
@@ -136,10 +142,6 @@ export class Chrome {
     catch(e) {
       console.error(e);
     }
-
-    this._browser = null;
-    this._pages = [];
-    this._activePageTab = 0;
   }
 
   async onPageNavigation (fn : Function) {
