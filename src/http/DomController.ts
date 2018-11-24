@@ -2,7 +2,7 @@ import { Exception } from '../exceptions/Exception';
 import { Controller } from './Controller';
 
 export class DomController extends Controller {
-  async click ({ query, button, xpath, tabIndex }) {
+  async click ({ query, button, xpath, tabIndex, awaitPageLoad = true }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
     let result : any = null;
@@ -13,9 +13,14 @@ export class DomController extends Controller {
     }
 
     try {
-      const watch = await this.awaitPageLoad();
-      result      = await this.browser.click(query, { button }, xpath, tabIndex);
-      await watch();
+      let watch : () => Promise<any> | null;
+      if (awaitPageLoad) {
+        watch = await this.awaitPageLoad();
+      }
+      result = await this.browser.click(query, { button }, xpath, tabIndex);
+      if (watch) {
+        await watch();
+      }
     }
     catch (e) {
       result = e;
