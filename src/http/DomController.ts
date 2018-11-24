@@ -48,6 +48,18 @@ export class DomController extends Controller {
     return { result };
   }
 
+  async values ({ elements, xpath, tabIndex }) {
+    if (!elements) throw new Exception('Expected an elements object', 400);
+
+    const results = {};
+
+    for (let key of Object.keys(elements)) {
+      results[key] = await this.browser.getValue(elements[key], xpath, tabIndex);
+    }
+
+    return { results };
+  }
+
   async scrollTo ({ query }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 

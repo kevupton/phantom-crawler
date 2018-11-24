@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer';
-import { Browser, ClickOptions, EvaluateFn, Page, PageEventObj } from 'puppeteer';
+import { Browser, ClickOptions, ElementHandle, EvaluateFn, Page, PageEventObj } from 'puppeteer';
 import { Dispatcher } from '../../lib/dispatcher/dispatcher';
 
 const PAGE_NAVIGATION_EVENT = 'onPageNavigation';
@@ -184,6 +184,31 @@ export class Chrome {
       .catch(e => {
         console.error('Run Method Error', e);
       });
+  }
+
+  async getValue(selector : string, xpath = false, tabIndex = this._activePageTab) {
+    const page = this._pages[tabIndex];
+
+    if (!page) {
+      return;
+    }
+
+    let item : ElementHandle = null;
+    if (xpath) {
+      const items = await page.$x(selector);
+      if (items.length) {
+        item = items[0];
+      }
+    }
+    else {
+      item =  await page.$(selector)
+    }
+
+    if (!item) {
+      return null;
+    }
+
+    return await page.evaluate(element => element.value || element.textContent, item);
   }
 
   async click (selector : string, options? : ClickOptions, xpath = false, tabIndex : number = this._activePageTab) {
