@@ -186,29 +186,44 @@ export class Chrome {
       });
   }
 
-  async getValue(selector : string, xpath = false, tabIndex = this._activePageTab) {
+  async contains(selector : string, xpath = false, tabIndex = this._activePageTab) {
     const page = this._pages[tabIndex];
 
     if (!page) {
       return;
     }
 
-    let item : ElementHandle = null;
     if (xpath) {
       const items = await page.$x(selector);
-      if (items.length) {
-        item = items[0];
-      }
+      return items.length > 0;
     }
     else {
-      item =  await page.$(selector)
+      return !!await page.$(selector);
+    }
+  }
+
+  async getValues(selector : string, xpath = false, tabIndex = this._activePageTab) {
+    const page = this._pages[tabIndex];
+
+    if (!page) {
+      return;
     }
 
-    if (!item) {
-      return null;
+    let items : ElementHandle[] | null = null;
+    if (xpath) {
+      items = await page.$x(selector);
+    }
+    else {
+      items =  await page.$$(selector)
     }
 
-    return await page.evaluate(element => element.value || element.textContent, item);
+    if (!items.length) {
+      return [];
+    }
+
+    return await page.evaluate((...elements) => {
+      return elements.map(element => element.value || element.nodeValue || element.textContent);
+    }, ...items);
   }
 
   async click (selector : string, options? : ClickOptions, xpath = false, tabIndex : number = this._activePageTab) {

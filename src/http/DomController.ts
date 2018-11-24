@@ -48,13 +48,21 @@ export class DomController extends Controller {
     return { result };
   }
 
+  async contains({ selector, xpath, tabIndex }) {
+    if (!selector) throw new Exception('Expected an Selector value', 400);
+
+    return {
+      result: await this.browser.contains(selector, xpath, tabIndex),
+    }
+  }
+
   async values ({ elements, xpath, tabIndex }) {
     if (!elements) throw new Exception('Expected an elements object', 400);
 
     const results = {};
 
     for (let key of Object.keys(elements)) {
-      results[key] = await this.browser.getValue(elements[key], xpath, tabIndex);
+      results[key] = await this.browser.getValues(elements[key], xpath, tabIndex);
     }
 
     return { results };

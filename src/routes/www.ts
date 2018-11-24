@@ -19,6 +19,7 @@ export function www (router : Router) {
   router.post('reset', PhantomController);
 
   // Dom manipulation
+  router.post('contains', DomController);
   router.post('values', DomController);
   router.post('click', DomController);
   router.post('fill', DomController);
