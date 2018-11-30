@@ -193,12 +193,17 @@ export class Chrome {
       return;
     }
 
-    if (xpath) {
-      const items = await page.$x(selector);
-      return items.length > 0;
+    try {
+      if (xpath) {
+        const items = await page.$x(selector);
+        return items.length > 0;
+      }
+      else {
+        return !!await page.$(selector);
+      }
     }
-    else {
-      return !!await page.$(selector);
+    catch(e) {
+      return false;
     }
   }
 
@@ -210,11 +215,17 @@ export class Chrome {
     }
 
     let items : ElementHandle[] | null = null;
-    if (xpath) {
-      items = await page.$x(selector);
+
+    try {
+      if (xpath) {
+        items = await page.$x(selector);
+      }
+      else {
+        items =  await page.$$(selector)
+      }
     }
-    else {
-      items =  await page.$$(selector)
+    catch(e) {
+      return [];
     }
 
     if (!items.length) {
@@ -233,11 +244,15 @@ export class Chrome {
       return;
     }
 
-    if (xpath) {
-      const items = await page.$x(selector);
-      return items.length && items[0].click(options) || null;
+    try {
+      if (xpath) {
+        const items = await page.$x(selector);
+        return items.length && items[0].click(options) || null;
+      }
+      return page.click(selector, options);
     }
-    return page.click(selector, options);
+    catch(e) {
+    }
   }
 
   async openNewTab () {
@@ -295,11 +310,15 @@ export class Chrome {
       return;
     }
 
-    if (xpath) {
-      const element = await this.page.$x(selector);
-      return element.length && element[0].hover();
+    try {
+      if (xpath) {
+        const element = await this.page.$x(selector);
+        return element.length && element[0].hover();
+      }
+      return this.page.hover(selector);
     }
-    return this.page.hover(selector);
+    catch(e) {
+    }
   }
 
   async focus (selector : string, xpath = false, tabIndex = this._activePageTab) {
@@ -309,11 +328,15 @@ export class Chrome {
       return;
     }
 
-    if (xpath) {
-      const element = await page.$x(selector);
-      return element.length && element[0].focus();
+    try {
+      if (xpath) {
+        const element = await page.$x(selector);
+        return element.length && element[0].focus();
+      }
+      await page.focus(selector);
     }
-    await page.focus(selector);
+    catch(e) {
+    }
   }
 
   async type (
