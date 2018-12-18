@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as path from "path";
 import { HTTPRequest } from '../system/HTTPRequest';
 import { HTTPResponse } from '../system/HTTPResponse';
 
@@ -8,7 +10,12 @@ export class ExceptionHandler {
     private response : HTTPResponse
   ) {
     console.error(`[ERROR]: Uncaught '${error.name}': ${error.message}`);
-    console.error(error);
     response.error(error);
+
+    if (process.env.DEBUG) {
+      console.error(error);
+    }
+
+    fs.appendFileSync(path.join(process.cwd(), '/phantom-error.log'), `${new Date()}\n${error.stack}\n\n`);
   }
 }
