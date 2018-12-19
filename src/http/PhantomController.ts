@@ -65,6 +65,11 @@ export class PhantomController extends Controller {
     }
   }
 
+  async screenshot ({ tabIndex, options }) {
+    const image = await this.browser.screenshot(tabIndex, options);
+    return { image };
+  }
+
   async get ({ url }) {
     const { page } = await this.browser.open(url);
     return await page.content();
