@@ -369,7 +369,12 @@ export class Chrome {
       return null;
     }
 
-    return await page.screenshot(options);
+    try {
+      return await page.screenshot(options);
+    }
+    catch(e) {
+      return null;
+    }
   }
 
   async refresh (tabIndex = this._activePageTab, options? : NavigationOptions) {
