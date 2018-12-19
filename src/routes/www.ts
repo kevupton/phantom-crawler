@@ -18,6 +18,7 @@ export function www (router : Router) {
   router.post('closeTab', PhantomController);
   router.post('reset', PhantomController);
   router.post('screenshot', PhantomController);
+  router.post('refresh', PhantomController);
 
   // Dom manipulation
   router.post('contains', DomController);

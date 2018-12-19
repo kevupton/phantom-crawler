@@ -1,5 +1,14 @@
 import * as puppeteer from 'puppeteer';
-import { Browser, ClickOptions, ElementHandle, EvaluateFn, Page, PageEventObj, ScreenshotOptions } from 'puppeteer';
+import {
+  Browser,
+  ClickOptions,
+  ElementHandle,
+  EvaluateFn,
+  NavigationOptions,
+  Page,
+  PageEventObj,
+  ScreenshotOptions,
+} from 'puppeteer';
 import { Dispatcher } from '../../lib/dispatcher/dispatcher';
 
 const PAGE_NAVIGATION_EVENT = 'onPageNavigation';
@@ -353,7 +362,7 @@ export class Chrome {
       });
   }
 
-  async screenshot (tabIndex = 0, options? : ScreenshotOptions) {
+  async screenshot (tabIndex = this._activePageTab, options? : ScreenshotOptions) {
     const page = this._pages[tabIndex];
 
     if (!page) {
@@ -361,6 +370,16 @@ export class Chrome {
     }
 
     return await page.screenshot(options);
+  }
+
+  async refresh (tabIndex = this._activePageTab, options? : NavigationOptions) {
+    const page = this._pages[tabIndex];
+
+    if (!page) {
+      return;
+    }
+
+    await page.reload(options);
   }
 
   private async getBrowser () : Promise<Browser> {
