@@ -47,4 +47,5 @@ export function run(loadArgs = false) {
   Application.instantiate(loadArgs ? readArgs() : {});
 }
 
-
+// The next line defines the sourceMapping.
+//# sourceMappingURL=app.js.map
