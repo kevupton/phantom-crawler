@@ -182,9 +182,14 @@ export class Chrome {
       return [];
     }
 
-    return await page.evaluate((...elements) => {
-      return elements.map(element => element.value || element.nodeValue || element.textContent);
-    }, ...items);
+    try {
+      return await page.evaluate((...elements) => {
+        return elements.map(element => element.value || element.nodeValue || element.textContent);
+      }, ...items);
+    }
+    catch (e) {
+      return [];
+    }
   }
 
   async click (selector : string, options? : ClickOptions, xpath = false, tabIndex : number = this._activePageTab) {
