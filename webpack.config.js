@@ -13,6 +13,7 @@ module.exports = {
     library: '',
     libraryTarget: 'commonjs'
   },
+  devtool: 'source-map',
   module: {
     loaders: [
       {

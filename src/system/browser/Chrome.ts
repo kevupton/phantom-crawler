@@ -296,7 +296,13 @@ export class Chrome {
     tabIndex                     = this._activePageTab,
   ) {
     const page = this._pages[tabIndex];
-    return page && page.type(selector, text, options);
+
+    try {
+      return await page && page.type(selector, text, options);
+    }
+    catch(e) {
+      return e.message;
+    }
   }
 
   async awaitPageLoad () {

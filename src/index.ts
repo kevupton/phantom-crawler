@@ -1,6 +1,9 @@
 import { Application } from './App';
 import 'babel-polyfill';
 import { ArgumentParser } from 'argparse';
+import { install } from 'source-map-support';
+
+install();
 
 function readArgs () {
   const parser = new ArgumentParser({
