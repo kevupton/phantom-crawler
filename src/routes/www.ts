@@ -13,6 +13,7 @@ export function www (router : Router) {
   router.get('get/:url', PhantomController);
   router.get('getTabs', PhantomController);
   router.post('headers', PhantomController);
+  router.post('goto', PhantomController);
   router.post('setActiveTab', PhantomController);
   router.post('openNewTab', PhantomController);
   router.post('closeTab', PhantomController);

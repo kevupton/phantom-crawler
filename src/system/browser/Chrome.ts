@@ -114,18 +114,20 @@ export class Chrome {
     this._dispatcher.remove(PAGE_NAVIGATION_EVENT, fn);
   }
 
-  async open (url : string) : Promise<{ status : number, page : Page }> {
+  async open (url : string, tabIndex = this._activePageTab) : Promise<{ status : number }> {
     await this.getBrowser();
 
-    if (!this.hasPage) {
-      await this.openNewTab();
+    const page = this._pages[tabIndex];
+
+    if (!page) {
+      throw new Error('Page with index does not exist');
     }
 
-    const response = await this.page.goto(url, { timeout: 120000 });
+    const response = await page.goto(url, { timeout: 300000 });
 
     if (!response.ok) throw new Error(`${ response.status }: Unable to load WebPage. ${ response.text() }`);
 
-    return { status: response.status(), page: this.page };
+    return { status: response.status() };
   }
 
   run<R> (fn : EvaluateFn, ...args : any[]) {
