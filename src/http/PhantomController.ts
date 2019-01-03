@@ -12,7 +12,7 @@ export class PhantomController extends Controller {
   }
 
   async cookies () : Promise<{
-    cookies: Cookie[]
+    cookies : Cookie[]
   }> {
     return {
       cookies: await this.browser.page.cookies(),
@@ -31,8 +31,8 @@ export class PhantomController extends Controller {
     this.response.html(await this.browser.getContent(index));
   }
 
-  async active_url () {
-    return { url: this.browser.url || null };
+  async active_url ({ index }) {
+    return { url: this.browser.getUrl(index) || null };
   }
 
   async download () {
@@ -45,7 +45,7 @@ export class PhantomController extends Controller {
         index,
         page: page.url(),
       })),
-    }
+    };
   }
 
   async setActiveTab ({ index }) {

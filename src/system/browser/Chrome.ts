@@ -173,7 +173,7 @@ export class Chrome {
         items = await page.$x(selector);
       }
       else {
-        items = await page.$$(selector)
+        items = await page.$$(selector);
       }
     }
     catch (e) {
@@ -307,7 +307,7 @@ export class Chrome {
     try {
       return await page && page.type(selector, text, options);
     }
-    catch(e) {
+    catch (e) {
       return e.message;
     }
   }
@@ -385,7 +385,7 @@ export class Chrome {
     try {
       return await page.screenshot(options);
     }
-    catch(e) {
+    catch (e) {
       return null;
     }
   }
@@ -400,6 +400,16 @@ export class Chrome {
     await page.reload(options);
   }
 
+  public getUrl (index = this._activePageTab) {
+    const page = this._pages[index];
+
+    if (!page) {
+      return null;
+    }
+
+    return page.url();
+  }
+
   private async getBrowser () : Promise<Browser> {
     const browser = await this._browser;
     if (!browser) {
@@ -411,7 +421,7 @@ export class Chrome {
 
   private createNewBrowser () {
     if (process.env.DEBUG) {
-      console.info('[DEBUG] Running Chrome in debug mode')
+      console.info('[DEBUG] Running Chrome in debug mode');
     }
 
     const args = [
@@ -421,7 +431,7 @@ export class Chrome {
 
     if (process.env.PROXY) {
       console.info('[INFO] Running Chrome on proxy ' + process.env.PROXY);
-      args.push('--proxy-server=' + process.env.PROXY)
+      args.push('--proxy-server=' + process.env.PROXY);
     }
 
     console.info('[INFO] Starting Chromium browser');

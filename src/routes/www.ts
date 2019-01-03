@@ -5,6 +5,7 @@ import { DomController } from '../http/DomController';
 export function www (router : Router) {
   router.get('active', PhantomController);
   router.get('active_url', PhantomController);
+  router.get('active_url/:index', PhantomController);
   router.get('cookies', PhantomController);
   router.get('download', PhantomController);
   router.get('display/:index', PhantomController);
