@@ -1,10 +1,10 @@
 import { Express, Request, Response } from 'express';
-import { Controller } from '../http/Controller';
+import { Controller } from './Controller';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
-import { ExceptionHandler } from '../exceptions/ExceptionHandler';
-import { Exception } from '../exceptions/Exception';
-import { Application } from '../App';
+import { ExceptionHandler } from './exceptions/ExceptionHandler';
+import { Exception } from './exceptions/Exception';
+import { Application } from '../../App';
 
 export class Router {
   constructor (
@@ -12,10 +12,24 @@ export class Router {
     private _app : Application
   ) {}
 
+  /**
+   * Get request
+   *
+   * @param path
+   * @param controller
+   * @param method
+   */
   get (path, controller : typeof Controller, method?) {
     this.call('get', path, controller, method);
   }
 
+  /**
+   * Post request
+   *
+   * @param path
+   * @param controller
+   * @param method
+   */
   post (path, controller : typeof Controller, method?) {
     this.call('post', path, controller, method);
   }

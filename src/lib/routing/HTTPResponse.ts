@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { Exception } from '../exceptions/Exception';
+import { Exception } from './exceptions/Exception';
 
 export class HTTPResponse {
   responseObj = {

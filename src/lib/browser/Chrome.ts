@@ -6,13 +6,9 @@ import {
   EvaluateFn,
   NavigationOptions,
   Page,
-  PageEventObj,
   ScreenshotOptions,
 } from 'puppeteer';
-import { Dispatcher } from '../../lib/dispatcher/dispatcher';
-
-const PAGE_NAVIGATION_EVENT = 'onPageNavigation';
-const PAGE_NAVIGATION_KEY   = Symbol();
+import { BehaviorSubject } from 'rxjs';
 
 export class Chrome {
   private static _instance = null;
@@ -21,39 +17,34 @@ export class Chrome {
     return this._instance || (this._instance = new Chrome());
   }
 
-  private _dispatcher     = new Dispatcher();
-  private _browser : Promise<Browser> | null;
-  private _activePageTab  = 0;
-  private _pages : Page[] = [];
+  private readonly browser              = new BehaviorSubject<Browser | null>(null);
+  private readonly activePageTabSubject = new BehaviorSubject<number>(0);
+  private readonly pagesSubject         = new BehaviorSubject<Page[]>([]);
 
-  get page () {
-    return this._pages[this._activePageTab];
+  get activePage () {
+    return this.pagesSubject.value[this.activePageTabSubject.value];
   }
 
   get url () {
-    return this.page && this.page.url();
+    return this.activePage && this.activePage.url();
   }
 
   get hasPage () {
-    return !!this.page;
-  }
-
-  get pages () {
-    return this._pages;
+    return !!this.activePage;
   }
 
   get content () {
-    return this.page && this.page.content();
+    return this.activePage && this.activePage.content();
   }
 
   get cookies () {
-    return this.page && this.page.cookies();
+    return this.activePage && this.activePage.cookies();
   }
 
   getContent (index ? : number) {
     if (index) {
-      if (this._pages[index]) {
-        return this._pages[index].content();
+      if (this.pagesSubject[index]) {
+        return this.pagesSubject.value[index].content();
       }
       return null;
     }
@@ -61,28 +52,12 @@ export class Chrome {
     return this.content;
   }
 
-  headers (extra) {
-    this.page && this.page.setExtraHTTPHeaders(extra);
-  }
-
-  off (eventName : string, fn : (...args : any[]) => void) {
-    return this.page && this.page.removeListener(eventName, fn);
-  }
-
-  on (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
-    return this.page && this.page.on(eventName, fn);
-  }
-
-  once (eventName : keyof PageEventObj, fn : (e : PageEventObj[keyof PageEventObj], ...args : any[]) => void) {
-    return this.page && this.page.once(eventName, fn);
-  }
-
   async reset () {
-    const promise = this._browser;
+    const promise = this.browser;
 
-    this._browser       = null;
-    this._pages         = [];
-    this._activePageTab = 0;
+    this.browser.next(null);
+    this.pagesSubject.next([]);
+    this.activePageTabSubject.next(0);
 
     const browser = await promise;
 
@@ -98,26 +73,10 @@ export class Chrome {
     }
   }
 
-  async onPageNavigation (fn : Function) {
-    try {
-      await this.page.exposeFunction(PAGE_NAVIGATION_EVENT, () => {
-        this._dispatcher.trigger(PAGE_NAVIGATION_EVENT);
-      });
-    }
-    catch (e) {
-    }
-
-    this._dispatcher.on(PAGE_NAVIGATION_EVENT, fn);
-  }
-
-  offPageNavigation (fn : Function) {
-    this._dispatcher.remove(PAGE_NAVIGATION_EVENT, fn);
-  }
-
-  async open (url : string, tabIndex = this._activePageTab) : Promise<{ status : number }> {
+  async open (url : string, tabIndex = this.activePageTabSubject) : Promise<{ status : number }> {
     await this.getBrowser();
 
-    const page = this._pages[tabIndex];
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       throw new Error('Page with index does not exist');
@@ -131,15 +90,15 @@ export class Chrome {
   }
 
   run<R> (fn : EvaluateFn, ...args : any[]) {
-    return this.page && this.page.mainFrame()
+    return this.activePage && this.activePage.mainFrame()
       .evaluate(fn, ...args)
       .catch(e => {
         console.error('Run Method Error', e);
       });
   }
 
-  async contains (selector : string, xpath = false, tabIndex = this._activePageTab) {
-    const page = this._pages[tabIndex];
+  async contains (selector : string, xpath = false, tabIndex = this.activePageTabSubject) {
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       return;
@@ -159,8 +118,8 @@ export class Chrome {
     }
   }
 
-  async getValues (selector : string, xpath = false, tabIndex = this._activePageTab) {
-    const page = this._pages[tabIndex];
+  async getValues (selector : string, xpath = false, tabIndex = this.activePageTabSubject) {
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       return;
@@ -194,8 +153,13 @@ export class Chrome {
     }
   }
 
-  async click (selector : string, options? : ClickOptions, xpath = false, tabIndex : number = this._activePageTab) {
-    const page = this._pages[tabIndex];
+  async click (
+    selector : string,
+    options? : ClickOptions,
+    xpath = false,
+    tabIndex : number = this.activePageTabSubject,
+  ) {
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       return;
@@ -220,7 +184,9 @@ export class Chrome {
       page[PAGE_NAVIGATION_KEY] = true;
       await page.evaluateOnNewDocument(name => {
         window.addEventListener('beforeunload', () => {
-          window[name]();
+          if (window[name]) {
+            window[name]();
+          }
         });
       }, PAGE_NAVIGATION_EVENT)
         .catch(err => {
@@ -229,57 +195,57 @@ export class Chrome {
     }
 
     await this.setViewport(page);
-    const index = this._pages.length;
-    this._pages.push(page);
+    const index = this.pagesSubject.length;
+    this.pagesSubject.push(page);
 
     return index;
   }
 
   async setActiveTab (index) {
-    if (!this._pages[index]) {
+    if (!this.pagesSubject[index]) {
       return;
     }
 
-    this._activePageTab = index;
-    await this.page.bringToFront();
+    this.activePageTabSubject = index;
+    await this.activePage.bringToFront();
   }
 
   async closeTabIndex (index) {
-    if (!this._pages[index]) {
+    if (!this.pagesSubject[index]) {
       return;
     }
 
-    if (this._pages.length === 1) {
+    if (this.pagesSubject.length === 1) {
       await this.reset();
       return;
     }
 
-    const page = this._pages.splice(index, 1)[0];
+    const page = this.pagesSubject.splice(index, 1)[0];
     await page.close();
 
-    if (index <= this._activePageTab) {
-      this._activePageTab = Math.max(this._activePageTab - 1, 0);
+    if (index <= this.activePageTabSubject) {
+      this.activePageTabSubject = Math.max(this.activePageTabSubject - 1, 0);
     }
   }
 
   async hover (selector : string, xpath = false) {
-    if (!this.page) {
+    if (!this.activePage) {
       return;
     }
 
     try {
       if (xpath) {
-        const element = await this.page.$x(selector);
+        const element = await this.activePage.$x(selector);
         return element.length && element[0].hover();
       }
-      return this.page.hover(selector);
+      return this.activePage.hover(selector);
     }
     catch (e) {
     }
   }
 
-  async focus (selector : string, xpath = false, tabIndex = this._activePageTab) {
-    const page = this._pages[tabIndex];
+  async focus (selector : string, xpath = false, tabIndex = this.activePageTabSubject) {
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       return;
@@ -300,9 +266,9 @@ export class Chrome {
     selector : string,
     text : string,
     options : { delay : number } = { delay: 20 },
-    tabIndex                     = this._activePageTab,
+    tabIndex                     = this.activePageTabSubject,
   ) {
-    const page = this._pages[tabIndex];
+    const page = this.pagesSubject[tabIndex];
 
     try {
       return await page && page.type(selector, text, options);
@@ -313,15 +279,15 @@ export class Chrome {
   }
 
   async awaitPageLoad () {
-    return this.page && this.page.waitForNavigation({ timeout: 120000 });
+    return this.activePage && this.activePage.waitForNavigation({ timeout: 120000 });
   }
 
   async scrollTop (query : string, top : number) {
-    if (!this.page) {
+    if (!this.activePage) {
       return;
     }
 
-    return this.page.evaluate(`(() => {
+    return this.activePage.evaluate(`(() => {
       const top = ${ JSON.stringify(top) };
       const item = document.querySelector(${ JSON.stringify(query) });
       
@@ -338,11 +304,11 @@ export class Chrome {
   }
 
   async scrollTo (query : string) {
-    if (!this.page) {
+    if (!this.activePage) {
       return;
     }
 
-    return this.page.evaluate(`(() => {
+    return this.activePage.evaluate(`(() => {
       const query = ${ JSON.stringify(query) };
       const item = document.querySelector(query);
       const parent = item.parentElement;
@@ -375,8 +341,8 @@ export class Chrome {
       });
   }
 
-  async screenshot (tabIndex = this._activePageTab, options? : ScreenshotOptions) {
-    const page = this._pages[tabIndex];
+  async screenshot (tabIndex = this.activePageTabSubject, options? : ScreenshotOptions) {
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       return null;
@@ -390,8 +356,8 @@ export class Chrome {
     }
   }
 
-  async refresh (tabIndex = this._activePageTab, options? : NavigationOptions) {
-    const page = this._pages[tabIndex];
+  async refresh (tabIndex = this.activePageTabSubject, options? : NavigationOptions) {
+    const page = this.pagesSubject[tabIndex];
 
     if (!page) {
       return;
@@ -400,8 +366,8 @@ export class Chrome {
     await page.reload(options);
   }
 
-  public getUrl (index = this._activePageTab) {
-    const page = this._pages[index];
+  public getUrl (index = this.activePageTabSubject) {
+    const page = this.pagesSubject[index];
 
     if (!page) {
       return null;
@@ -411,62 +377,16 @@ export class Chrome {
   }
 
   private async getBrowser () : Promise<Browser> {
-    const browser = await this._browser;
+    const browser = await this.browser;
     if (!browser) {
       this.createNewBrowser();
-      return await this._browser;
+      return await this.browser;
     }
     return browser;
   }
 
   private createNewBrowser () {
-    if (process.env.DEBUG) {
-      console.info('[DEBUG] Running Chrome in debug mode');
-    }
 
-    const args = [
-      '--no-sandbox',
-      '--disable-dev-shm-usage',
-    ];
-
-    if (process.env.PROXY) {
-      console.info('[INFO] Running Chrome on proxy ' + process.env.PROXY);
-      args.push('--proxy-server=' + process.env.PROXY);
-    }
-
-    console.info('[INFO] Starting Chromium browser');
-
-    this._browser = puppeteer.launch({
-      headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
-      args: args,
-    })
-      .then(async browser => {
-        console.info('[INFO] Running Chromium browser version: ', await browser.version());
-
-        browser.on('targetdestroyed', async target => {
-          try {
-            const page = await target.page();
-            if (page === this.page) {
-              this._pages.splice(this._activePageTab, 1);
-            }
-          }
-          catch (e) {
-            console.error('rip', e);
-          }
-        });
-
-        this._pages = await browser.pages();
-
-        for (let i = 0; i < this._pages.length; i++) {
-          await this.setViewport(this._pages[i]);
-        }
-
-        return browser;
-      })
-      .catch(e => {
-        console.error('New Browser Method error', e);
-        return null;
-      });
   }
 
   private async setViewport (page : Page) {

@@ -1,5 +1,5 @@
-import { Exception } from '../exceptions/Exception';
-import { Controller } from './Controller';
+import { Exception } from '../lib/routing/exceptions/Exception';
+import { Controller } from '../lib/routing/Controller';
 
 export class DomController extends Controller {
   async click ({ query, button, xpath, tabIndex, awaitPageLoad = true }) {

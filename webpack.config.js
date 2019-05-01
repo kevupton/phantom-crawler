@@ -1,6 +1,4 @@
 var path = require('path');
-var webpack = require('webpack');
-var fs = require('fs');
 var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
@@ -15,7 +13,7 @@ module.exports = {
   },
   devtool: 'source-map',
   module: {
-    loaders: [
+    rules:  [
       {
         test: /\.tsx?$/,
         loaders: ['babel-loader', 'ts-loader'],

@@ -1,7 +1,7 @@
 import { Cookie, Response } from 'puppeteer';
-import { Exception } from '../exceptions/Exception';
+import { Exception } from '../lib/routing/exceptions/Exception';
 import { Phantom } from '../system/browser/Phantom';
-import { Controller } from './Controller';
+import { Controller } from '../lib/routing/Controller';
 
 export class PhantomController extends Controller {
   async active () {
@@ -15,7 +15,7 @@ export class PhantomController extends Controller {
     cookies : Cookie[]
   }> {
     return {
-      cookies: await this.browser.page.cookies(),
+      cookies: await this.browser.activePage.cookies(),
     };
   }
 
@@ -24,7 +24,7 @@ export class PhantomController extends Controller {
   }
 
   async back () : Promise<Response | null> {
-    return await this.browser.page.goBack();
+    return await this.browser.activePage.goBack();
   }
 
   async display ({ index }) {

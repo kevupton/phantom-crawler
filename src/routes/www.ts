@@ -1,5 +1,5 @@
 import { PhantomController } from '../http/PhantomController';
-import { Router } from '../system/Router';
+import { Router } from '../lib/routing/Router';
 import { DomController } from '../http/DomController';
 
 export function www (router : Router) {
