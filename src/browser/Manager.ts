@@ -34,7 +34,7 @@ export abstract class Manager<T extends ManagerItem> {
     return this.instancesSubject.value.concat();
   }
 
-  protected constructor () {
+  constructor () {
     this.keepActiveIndexInsideBounds();
   }
 

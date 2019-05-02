@@ -2,9 +2,10 @@ import { WebPage as PhantomPage } from 'phantom';
 import {
   Browser as Chrome,
   ClickOptions,
+  Cookie,
+  ElementHandle,
   EvaluateFn,
   NavigationOptions,
-  Cookie,
   Page as ChromePage,
   ScreenshotOptions,
 } from 'puppeteer';
@@ -22,7 +23,7 @@ export interface IPage {
 
   open (url : string) : Observable<IOpenResponse>;
 
-  run<R> (fn : EvaluateFn, ...args : any[]) : Observable<void>;
+  run (fn : EvaluateFn, ...args : any[]) : Observable<void>;
 
   contains (options? : DomOptions) : Observable<boolean>;
 
@@ -121,7 +122,7 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
-  run<R> (fn : EvaluateFn, ...args : any[]) : Observable<any> {
+  run (fn : EvaluateFn, ...args : any[]) : Observable<any> {
     return this.caseManager(
       chromePage => from(chromePage.mainFrame()
         .evaluate(fn, ...args)),
@@ -316,10 +317,10 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
-  back() : Observable<void> {
+  back () : Observable<void> {
     return this.caseManager(
       chromePage => from(chromePage.goBack()),
-    )
+    );
   }
 
   refresh (options? : NavigationOptions) : Observable<void> {
@@ -328,7 +329,7 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
-  getCookies() : Observable<Cookie[]> {
+  getCookies () : Observable<Cookie[]> {
     return this.caseManager(
       chromePage => from(chromePage.cookies()),
     );
@@ -395,7 +396,7 @@ export class Page extends ManagerItem implements IPage {
   private caseManager (
     chromeMethod : (page : ChromePage) => Observable<any>,
     phantomMethod? : (page : PhantomPage) => Observable<any>,
-  ) {
+  ) : Observable<any> {
     return this.pageSubject.pipe(
       flatMap(({ chromePage, phantomPage }) => {
         if (chromePage) {
@@ -416,7 +417,7 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
-  private getChromeItems (chromePage : ChromePage, selector : string, xpath? : boolean) {
+  private getChromeItems (chromePage : ChromePage, selector : string, xpath? : boolean) : Observable<ElementHandle[]> {
     return xpath ? from(chromePage.$x(selector)) : from(chromePage.$$(selector));
   }
 

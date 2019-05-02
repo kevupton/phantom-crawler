@@ -1,7 +1,6 @@
 import { PhantomJS } from 'phantom';
 import { Browser as Chrome, BrowserEventObj, launch as launchPuppeteer } from 'puppeteer';
-import { AsyncSubject, Observable } from 'rxjs';
-import { from } from 'rxjs/internal/observable/from';
+import { AsyncSubject, from, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap, mapTo } from 'rxjs/operators';
@@ -85,12 +84,13 @@ export class Browser extends ManagerItem implements IBrowser {
 
           return of(null);
         }),
-        mapTo(undefined)
+        mapTo(undefined),
       );
   }
 
   setActiveTab (index : any) : Observable<void> {
-    return this.pageManager.setActiveInstance(index);
+    return this.pageManager.setActiveInstance(index)
+      .pipe(mapTo(undefined));
   }
 
   closeTab (index : any) : Observable<void> {
