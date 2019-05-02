@@ -1,9 +1,9 @@
+import { Observable } from 'rxjs';
 import { combineLatest } from 'rxjs/internal/observable/combineLatest';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap, map } from 'rxjs/operators';
 import { Controller } from '../Controller';
-import { Exception } from '../exceptions/Exception';
 
 export class BrowserController extends Controller {
   active () {
@@ -32,7 +32,7 @@ export class BrowserController extends Controller {
     );
   }
 
-  display ({ tabIndex }) {
+  display ({ tabIndex } : any) {
     return this.getActiveBrowserPage(tabIndex)
       .pipe(
         flatMap(page => page.getContent()),
@@ -40,7 +40,7 @@ export class BrowserController extends Controller {
       );
   }
 
-  active_url ({ tabIndex }) {
+  active_url ({ tabIndex } : any) {
     return this.getActiveBrowserPage(tabIndex)
       .pipe(
         flatMap(page => page.getUrl()),
@@ -66,32 +66,32 @@ export class BrowserController extends Controller {
     );
   }
 
-  setActiveTab ({ tabIndex }) {
+  setActiveTab ({ tabIndex } : any) {
     return this.activeBrowser$.pipe(
       flatMap(browser => browser.setActiveTab(tabIndex)),
     );
   }
 
-  closeTab ({ tabIndex }) {
+  closeTab ({ tabIndex } : any) {
     return this.activeBrowser$.pipe(
       flatMap(browser => browser.closeTab(tabIndex)),
     );
   }
 
-  openNewTab ({ url }) {
+  openNewTab ({ url } : any) {
     return this.activeBrowser$.pipe(
       flatMap(browser => browser.openNewTab(url)),
     );
   }
 
-  refresh ({ tabIndex, options }) {
+  refresh ({ tabIndex, options } : any) {
     return this.getActiveBrowserPage(tabIndex)
       .pipe(
         flatMap(page => page.refresh(options)),
       );
   }
 
-  screenshot ({ tabIndex, options }) {
+  screenshot ({ tabIndex, options } : any) {
     return this.getActiveBrowserPage(tabIndex)
       .pipe(
         flatMap(page => page.captureScreenshot(options)),
@@ -99,11 +99,11 @@ export class BrowserController extends Controller {
       );
   }
 
-  get ({ url, tabIndex }) {
+  get ({ url, tabIndex } : any) {
     return this.getActiveBrowserPage(tabIndex)
       .pipe(
         flatMap((page) => {
-          let obs = of(null);
+          let obs : Observable<any> = of(null);
           if (url) {
             obs = page.open(url);
           }
@@ -112,7 +112,7 @@ export class BrowserController extends Controller {
       );
   }
 
-  goto ({ url, tabIndex }) {
+  goto ({ url, tabIndex } : any) {
     return this.getActiveBrowserPage(tabIndex).pipe(
       flatMap(page => page.open(url)),
     );

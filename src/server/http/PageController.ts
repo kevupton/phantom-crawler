@@ -5,7 +5,7 @@ import { Controller } from '../Controller';
 import { Exception } from '../exceptions/Exception';
 
 export class PageController extends Controller {
-  click ({ selector, button, xpath, tabIndex, awaitPageLoad = true }) : Observable<void> {
+  click ({ selector, button, xpath, tabIndex, awaitPageLoad = true } : any) : Observable<void> {
     if (!selector) throw new Exception('Expected query to be defined', 400);
 
     button = button || 'left';
@@ -25,7 +25,7 @@ export class PageController extends Controller {
       );
   }
 
-  hover ({ selector, xpath, tabIndex }) {
+  hover ({ selector, xpath, tabIndex } : any) {
     if (!selector) throw new Exception('Expected query to be defined', 400);
 
     return this.getActiveBrowserPage(tabIndex)
@@ -35,7 +35,7 @@ export class PageController extends Controller {
       );
   }
 
-  scrollTop ({ selector, xpath, top, tabIndex }) {
+  scrollTop ({ selector, xpath, top, tabIndex } : any) {
     if (!selector) throw new Exception('Expected query to be defined', 400);
 
     top = top || 0;
@@ -47,7 +47,7 @@ export class PageController extends Controller {
       );
   }
 
-  contains ({ selector, xpath, tabIndex }) {
+  contains ({ selector, xpath, tabIndex } : any) {
     if (!selector) throw new Exception('Expected an Selector value', 400);
 
     return this.getActiveBrowserPage(tabIndex)
@@ -57,7 +57,7 @@ export class PageController extends Controller {
       );
   }
 
-  values ({ elements, xpath, tabIndex }) {
+  values ({ elements, xpath, tabIndex } : any) {
     if (!elements) throw new Exception('Expected an elements object', 400);
 
     return this.getActiveBrowserPage(tabIndex)
@@ -81,7 +81,7 @@ export class PageController extends Controller {
       );
   }
 
-  scrollTo ({ selector, tabIndex, xpath }) {
+  scrollTo ({ selector, tabIndex, xpath } : any) {
     if (!selector) throw new Exception('Expected query to be defined', 400);
 
     return this.getActiveBrowserPage(tabIndex)
@@ -91,7 +91,7 @@ export class PageController extends Controller {
       );
   }
 
-  focus ({ selector, xpath, tabIndex }) {
+  focus ({ selector, xpath, tabIndex } : any) {
     if (!selector) throw new Exception('Expected query to be defined', 400);
 
     return this.getActiveBrowserPage(tabIndex)
@@ -101,7 +101,7 @@ export class PageController extends Controller {
       );
   }
 
-  type ({ inputs, delay, xpath, tabIndex }) {
+  type ({ inputs, delay, xpath, tabIndex } : any) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
     delay = delay || 20;
 
@@ -125,7 +125,7 @@ export class PageController extends Controller {
       );
   }
 
-  fill ({ inputs, tabIndex }) {
+  fill ({ inputs, tabIndex } : any) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
 
     return this.getActiveBrowserPage(tabIndex)

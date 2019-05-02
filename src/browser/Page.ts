@@ -20,7 +20,7 @@ export interface IPage {
 
   getContent () : Observable<string>;
 
-  open (url) : Observable<IOpenResponse>;
+  open (url : string) : Observable<IOpenResponse>;
 
   run<R> (fn : EvaluateFn, ...args : any[]) : Observable<void>;
 
@@ -115,7 +115,7 @@ export class Page extends ManagerItem implements IPage {
       chromePage => from(chromePage.goto(url, { timeout: 300000 }))
         .pipe(
           map(response => ({
-            status: response.status(),
+            status: response && response.status() || null,
           })),
         ),
     );
@@ -171,7 +171,6 @@ export class Page extends ManagerItem implements IPage {
   hover ({ selector, xpath } : DomOptions) {
     return this.caseManager(
       chromePage => {
-        const items$ = this.getChromeItems(chromePage, selector, xpath);
         return this.getChromeItems(chromePage, selector, xpath)
           .pipe(
             flatMap(elements => {
@@ -407,8 +406,11 @@ export class Page extends ManagerItem implements IPage {
             throw new Error('PhantomJS Pages have not been implemented yet.');
           }
           else {
-            phantomMethod(phantomPage);
+            return phantomMethod(phantomPage);
           }
+        }
+        else {
+          throw new Error('Unexpected error trying to handle a case');
         }
       }),
     );
