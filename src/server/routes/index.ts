@@ -1,5 +1,5 @@
 import { www } from './www';
-import { Router } from '../lib/routing/Router';
+import { Router } from '../Router';
 
 export function routes (router : Router) {
   www(router);

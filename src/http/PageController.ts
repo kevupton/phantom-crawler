@@ -1,8 +1,8 @@
-import { Exception } from '../lib/routing/exceptions/Exception';
-import { Controller } from '../lib/routing/Controller';
+import { Controller } from '../server/Controller';
+import { Exception } from '../server/exceptions/Exception';
 
-export class DomController extends Controller {
-  async click ({ query, button, xpath, tabIndex, awaitPageLoad = true }) {
+export class PageController extends Controller {
+  click ({ query, button, xpath, tabIndex, awaitPageLoad = true }) {
     if (!query) throw new Exception('Expected query to be defined', 400);
 
     let result : any = null;
@@ -15,7 +15,7 @@ export class DomController extends Controller {
     try {
       let watch : () => Promise<any> | null;
       if (awaitPageLoad) {
-        watch = await this.awaitPageLoad();
+        watch = this.browser.getTab(tabIndex).awaitPageLoad();
       }
       result = await this.browser.click(query, { button }, xpath, tabIndex);
       if (watch) {

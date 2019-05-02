@@ -33,7 +33,7 @@ export class PageManager {
   }
 
   openNewTab () {
-    return new Observable<void>(subscriber => {
+    return new Observable<Page>(subscriber => {
       const page = new Page(this.browser);
 
       subscriber.add(page.setup().pipe(
@@ -51,7 +51,7 @@ export class PageManager {
             page,
           ]);
 
-          subscriber.next();
+          subscriber.next(page);
           subscriber.complete();
         },
       }));

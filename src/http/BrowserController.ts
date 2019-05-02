@@ -1,9 +1,8 @@
 import { Cookie, Response } from 'puppeteer';
-import { Exception } from '../lib/routing/exceptions/Exception';
-import { Phantom } from '../system/browser/Phantom';
-import { Controller } from '../lib/routing/Controller';
+import { Controller } from '../server/Controller';
+import { Exception } from '../server/exceptions/Exception';
 
-export class PhantomController extends Controller {
+export class BrowserController extends Controller {
   async active () {
     return {
       isActive: Phantom.instance.hasPage,

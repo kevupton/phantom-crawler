@@ -5,7 +5,7 @@ import { from } from 'rxjs/internal/observable/from';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap } from 'rxjs/operators';
-import { EventCallback, RxjsBasicEventManager } from '../RxjsBasicEventManager';
+import { EventCallback, RxjsBasicEventManager } from '../lib/RxjsBasicEventManager';
 import { ManagerItem } from './ManagerItem';
 import { IPagePossibilities, Page } from './Page';
 import { PageManager } from './PageManager';
@@ -65,12 +65,8 @@ export class Browser extends ManagerItem implements IBrowser {
     return this.pageManager.reset();
   }
 
-  getTab (tabIndex : number) {
-    const tab = this.pageManager.getTab(tabIndex);
-    if (!tab) {
-      throw new Error('Tab does not exist');
-    }
-    return tab;
+  getTab (tabIndex? : number) {
+    return this.pageManager.getTab(tabIndex);
   }
 
   openNewTab () : Observable<Page> {

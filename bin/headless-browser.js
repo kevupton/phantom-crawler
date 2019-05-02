@@ -1,3 +1,6 @@
 #!/usr/bin/env node
 
-require('../lib/app.js').run(true);
+const app = require('../lib/app.js');
+
+app.loadArgs();
+app.startServer();

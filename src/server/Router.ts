@@ -1,15 +1,14 @@
 import { Express, Request, Response } from 'express';
+import { environment } from '../lib/Environment';
 import { Controller } from './Controller';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
 import { ExceptionHandler } from './exceptions/ExceptionHandler';
 import { Exception } from './exceptions/Exception';
-import { Application } from '../../App';
 
 export class Router {
   constructor (
     private express : Express,
-    private _app : Application
   ) {}
 
   /**
@@ -42,12 +41,12 @@ export class Router {
       const request  = new HTTPRequest(req);
       const response = new HTTPResponse(res);
 
-      if (this._app.isDebug) {
+      if (environment.debug) {
         console.log(`[LOG] Received request for ${path}.`);
       }
 
       try {
-        const ctrl = new controller(request, response, this._app);
+        const ctrl = new controller(request, response);
         let error  = null;
 
         if (typeof ctrl[method] === 'function') {

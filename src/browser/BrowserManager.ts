@@ -13,7 +13,7 @@ export class BrowserManager {
   }
 
   openNewBrowser(type : BrowserType = BrowserType.Chrome) {
-    return new Observable(subscriber => {
+    return new Observable<Browser>(subscriber => {
       const browser = new Browser(type);
 
       subscriber.add(browser.setup().subscribe({
@@ -29,7 +29,7 @@ export class BrowserManager {
             browser,
           ]);
 
-          subscriber.next();
+          subscriber.next(browser);
           subscriber.complete();
         }
       }));
