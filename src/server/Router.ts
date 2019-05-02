@@ -22,7 +22,7 @@ export class Router {
    * @param controller
    * @param method
    */
-  get (path, controller : typeof Controller, method?) {
+  get (path : string, controller : typeof Controller, method?: string) {
     this.call('get', path, controller, method);
   }
 
@@ -33,13 +33,15 @@ export class Router {
    * @param controller
    * @param method
    */
-  post (path, controller : typeof Controller, method?) {
+  post (path : string, controller : typeof Controller, method?: string) {
     this.call('post', path, controller, method);
   }
 
-  private call (route, path, controller : typeof Controller, method?) {
+  private call (route : 'post' | 'get', path : string, controller : typeof Controller, method?: string) {
     path = path.replace(/^\s*\/|\/\s*$/, '');
-    if (!method) method = path.split('/')[0];
+    if (!method) {
+      method = path.split('/')[0];
+    }
 
     this.express[route](`/${path}`, async (req : Request, res : Response) => {
       const request  = new HTTPRequest(req);
@@ -52,6 +54,10 @@ export class Router {
       try {
         const ctrl = new controller(request, response, this.browserManager);
         let error  = null;
+
+        if (!method) {
+          throw new Error('No method found in route');
+        }
 
         if (typeof ctrl[method] === 'function') {
           try {
@@ -69,7 +75,7 @@ export class Router {
           }
         }
         else {
-          throw new Exception(`${method} does not exist on Controller`);
+          throw new Exception(`'${method}' does not exist on Controller`);
         }
 
         ctrl.destructor();
