@@ -133,13 +133,15 @@ export class Browser extends ManagerItem implements IBrowser {
           this.browserSubject.next({ chromeBrowser: browser });
           this.browserSubject.complete();
 
-          this.on$('targetdestroyed')
+          const eventSubscription = this.on$('targetdestroyed')
             .pipe(
               flatMap(([target]) => from(target.page())),
             )
             .subscribe((page) => {
               this.pageManager.closeTab(page);
             });
+
+          this.unsubscribeOnDestroy(eventSubscription);
         }),
         flatMap(browser => from(browser.pages())),
         tap(pages => this.pageManager.registerPages(

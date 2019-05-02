@@ -85,6 +85,10 @@ export class PageManager {
     return tab;
   }
 
+  getActiveTab() {
+
+  }
+
   setActiveTab (index : number) {
     return this.getTab(index)
       .bringToFront()
