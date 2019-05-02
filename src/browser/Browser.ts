@@ -4,6 +4,7 @@ import { AsyncSubject, from, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap, mapTo } from 'rxjs/operators';
+import { environment } from '../lib/Environment';
 import { EventCallback, RxjsBasicEventManager } from '../lib/RxjsBasicEventManager';
 import { ManagerItem } from './ManagerItem';
 import { IPagePossibilities, Page } from './Page';
@@ -119,7 +120,7 @@ export class Browser extends ManagerItem implements IBrowser {
   }
 
   private launchPuppeteer () {
-    if (process.env.DEBUG) {
+    if (environment.debug) {
       console.info('[DEBUG] Running Chrome in debug mode');
     }
 
@@ -128,15 +129,15 @@ export class Browser extends ManagerItem implements IBrowser {
       '--disable-dev-shm-usage',
     ];
 
-    if (process.env.PROXY) {
-      console.info('[INFO] Running Chrome on proxy ' + process.env.PROXY);
-      args.push('--proxy-server=' + process.env.PROXY);
+    if (environment.proxy) {
+      console.info('[INFO] Running Chrome on proxy ' + environment.proxy);
+      args.push('--proxy-server=' + environment.proxy);
     }
 
     console.info('[INFO] Starting Chromium browser');
 
     return from(puppeteer.launch({
-      headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
+      headless: !(environment.debug || environment.openBrowser),
       args: args,
     }))
       .pipe(

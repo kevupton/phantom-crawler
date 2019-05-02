@@ -8,14 +8,17 @@ export function updateEnvironment(variables : Environment) {
 }
 
 interface Environment {
+  appEnv: string;
   browserType : BrowserType;
   host: string;
   port: string;
   debug: boolean;
   proxy?: string;
+  openBrowser?: boolean;
 }
 
 export const environment : Environment = {
+  appEnv: 'development',
   host: 'localhost',
   port: '1001',
   debug: false,

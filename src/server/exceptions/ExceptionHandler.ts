@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { environment } from '../../lib/Environment';
 import { HTTPRequest } from '../HTTPRequest';
 import { HTTPResponse } from '../HTTPResponse';
 import { Exception } from './Exception';
@@ -13,7 +14,7 @@ export class ExceptionHandler {
     console.error(`[ERROR]: Uncaught '${ error.name }': ${ error.message }`);
     response.error(error);
 
-    if (process.env.DEBUG) {
+    if (environment.debug) {
       console.error(error);
     }
 

@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { environment } from '../lib/Environment';
 import { Exception } from './exceptions/Exception';
 
 export class HTTPResponse {
@@ -20,7 +21,7 @@ export class HTTPResponse {
     if (error instanceof Exception) {
       obj.status_code = error.code;
     }
-    if (process.env.APP_ENV !== 'production') {
+    if (environment.appEnv !== 'production') {
       obj.stack_trace = error.stack;
     }
     this._send(obj);
