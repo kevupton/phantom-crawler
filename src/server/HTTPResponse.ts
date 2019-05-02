@@ -40,15 +40,15 @@ export class HTTPResponse {
     this.response.send(content);
   }
 
-  send (data) {
+  send (data : any) {
     this._send({data});
   }
 
-  private _makeResponse (obj) {
+  private _makeResponse (obj : any) {
     return Object.assign({}, this.responseObj, obj);
   }
 
-  private _send (obj) {
+  private _send (obj : any) {
     if (this._sent) return;
     this._sent = true;
     this.response.status(obj.status_code || 200);

@@ -3,11 +3,11 @@ export class Exception {
   stack : string;
 
   constructor (
-    public message,
+    public message : string,
     public code = 500,
   ) {
     this.name  = this.constructor.name;
-    this.stack = (new Error()).stack;
+    this.stack = (new Error()).stack || 'Unknown Stack';
   }
 
   getReason () {

@@ -1,6 +1,7 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import { BrowserManager } from '../browser/BrowserManager';
+import { environment } from '../lib/Environment';
 import { routes } from './routes';
 import { Router } from './Router';
 
@@ -24,8 +25,8 @@ export class Server {
   }
 
   startServer () {
-    const port = parseInt(process.env.PORT, 10) || 3000;
-    const host = process.env.HOST || 'localhost';
+    const port = parseInt(environment.port, 10) || 3000;
+    const host = environment.host;
     this.server.listen(port, host, () => console.log(`SERVER RUNNING: ${ host }:${ port }`));
   }
 }

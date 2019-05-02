@@ -1,4 +1,4 @@
-import { AsyncSubject, BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { finalize, share } from 'rxjs/operators';
 
 interface EventSubscriptions {
@@ -9,7 +9,7 @@ export type EventCallback = (...args : any[]) => any;
 
 export class RxjsBasicEventManager {
   private readonly eventsSubject = new BehaviorSubject<EventSubscriptions>({});
-  private readonly resetSubject = new Subject<void>();
+  private readonly resetSubject  = new Subject<void>();
 
   constructor (
     private readonly onEventHandler : (event : string, fn : EventCallback) => Observable<any>,

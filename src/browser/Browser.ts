@@ -1,5 +1,5 @@
 import { PhantomJS } from 'phantom';
-import { Browser as Chrome, BrowserEventObj, default as puppeteer } from 'puppeteer';
+import { Browser as Chrome, BrowserEventObj, launch as launchPuppeteer } from 'puppeteer';
 import { AsyncSubject, Observable } from 'rxjs';
 import { from } from 'rxjs/internal/observable/from';
 import { of } from 'rxjs/internal/observable/of';
@@ -27,11 +27,11 @@ export interface IBrowser {
 
   getTab (tabIndex : number) : Page;
 
-  openNewTab () : Observable<Page>;
+  openNewTab () : Observable<void>;
 
-  setActiveTab (index) : Observable<void>;
+  setActiveTab (tabIndex : number) : Observable<void>;
 
-  closeTab (index) : Observable<void>;
+  closeTab (tabIndex : number) : Observable<void>;
 }
 
 export interface IBrowserPossibilities {
@@ -75,7 +75,7 @@ export class Browser extends ManagerItem implements IBrowser {
     return this.pageManager.getInstance(tabIndex);
   }
 
-  openNewTab (url? : string) : Observable<Page> {
+  openNewTab (url? : string) : Observable<void> {
     return this.pageManager.openNewInstance()
       .pipe(
         flatMap(page => {
@@ -135,7 +135,7 @@ export class Browser extends ManagerItem implements IBrowser {
 
     console.info('[INFO] Starting Chromium browser');
 
-    return from(puppeteer.launch({
+    return from(launchPuppeteer({
       headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
       args: args,
     }))
@@ -184,8 +184,11 @@ export class Browser extends ManagerItem implements IBrowser {
             throw new Error('Phantom Browser has not been implemented as of yet.');
           }
           else {
-            phantomMethod(phantomBrowser);
+            return phantomMethod(phantomBrowser);
           }
+        }
+        else {
+          throw new Error('Something went wrong with the case manager for the Browser');
         }
       }),
     );

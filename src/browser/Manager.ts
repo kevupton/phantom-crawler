@@ -1,4 +1,5 @@
 import { BehaviorSubject, combineLatest, Observable, of, UnaryFunction } from 'rxjs';
+import { pipe } from 'rxjs/internal/util/pipe';
 import { distinctUntilChanged, filter, first, flatMap, map, mapTo, shareReplay, tap } from 'rxjs/operators';
 import { ManagerItem } from './ManagerItem';
 
@@ -70,7 +71,7 @@ export abstract class Manager<T extends ManagerItem> {
     return new Observable<T>(subscriber => {
       subscriber.add(instance
         .setup()
-        .pipe(afterSetup)
+        .pipe(afterSetup || pipe())
         .subscribe({
           complete: () => {
             instance.destroyed$.subscribe(() => {

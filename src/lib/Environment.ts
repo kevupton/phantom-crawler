@@ -16,7 +16,7 @@ interface Environment {
 }
 
 export const environment : Environment = {
-  host: '127.0.0.1',
+  host: 'localhost',
   port: '1001',
   debug: false,
   browserType: BrowserType.Chrome,

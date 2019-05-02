@@ -47,7 +47,7 @@ export class PageManager extends Manager<Page> {
       );
   }
 
-  reset () : Observable<void> {
+  reset () : Observable<undefined> {
     return super.reset()
       .pipe(
         flatMap(() => this.openNewInstance()),
@@ -70,8 +70,8 @@ export class PageManager extends Manager<Page> {
       );
   }
 
-  closeTabAtIndex (index) {
-    return this.getInstance(index)
+  closeTabAtIndex (tabIndex : number) {
+    return this.getInstance(tabIndex)
       .destroy();
   }
 }
