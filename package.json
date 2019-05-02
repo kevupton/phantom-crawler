@@ -18,9 +18,9 @@
   "author": "Kevin Upton",
   "license": "ISC",
   "devDependencies": {
-    "@types/lodash": "^4.14.123",
     "@types/argparse": "1.0.33",
     "@types/express": "4.0.39",
+    "@types/lodash": "^4.14.123",
     "@types/node": "11.13.8",
     "@types/phantom": "3.2.3",
     "@types/phantomjs": "1.9.29",
