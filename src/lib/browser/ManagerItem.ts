@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
+import { AsyncSubject, Observable } from 'rxjs';
 import { from } from 'rxjs/internal/observable/from';
-import { mapTo, shareReplay } from 'rxjs/operators';
+import { mapTo, shareReplay, tap } from 'rxjs/operators';
 
 export enum SetupStage {
   Inactive,
@@ -11,6 +11,16 @@ export enum SetupStage {
 export abstract class ManagerItem {
 
   private setupStage = SetupStage.Inactive;
+  private readonly destroyedSubject = new AsyncSubject<void>();
+  private readonly constructedSubject = new AsyncSubject<void>();
+
+  get destroyed$ () {
+    return this.destroyedSubject.asObservable();
+  }
+
+  get constructed$ () {
+    return this.constructedSubject.asObservable();
+  }
 
   setup () : Observable<this> {
     if (this.setupStage !== SetupStage.Inactive) {
@@ -18,26 +28,45 @@ export abstract class ManagerItem {
     }
 
     this.setupStage = SetupStage.Constructed;
-    return from(this.handleConstruction() || null)
+    const obs$ = from(this.handleConstruction() || null)
       .pipe(
+        tap(() => {
+          this.constructedSubject.next();
+          this.constructedSubject.complete();
+        }),
         mapTo(this),
         shareReplay(1),
       );
+
+    obs$.subscribe(); // just to execute the setup
+
+    return obs$;
   }
 
-  protected abstract handleConstruction () : Observable<this> | void;
+  protected abstract handleConstruction () : Observable<any> | void;
 
   destroy () : Observable<void> {
+    if (this.setupStage === SetupStage.Destructed) {
+      throw new Error('Object has already been destructed');
+    }
     if (this.setupStage !== SetupStage.Constructed) {
       throw new Error('Object has not be constructed. Therefore it cannot be destructed.');
     }
 
     this.setupStage = SetupStage.Destructed;
-    return from(this.handleDestruct() || null)
+    const obs$ = from(this.handleDestruct() || null)
       .pipe(
+        tap(() => {
+          this.destroyedSubject.next();
+          this.destroyedSubject.complete();
+        }),
         mapTo(undefined),
         shareReplay(1),
       );
+
+    obs$.subscribe(); // just to exec the destruction
+
+    return obs$;
   }
 
   protected abstract handleDestruct () : Observable<any> | void;

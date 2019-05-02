@@ -43,6 +43,12 @@ export class PageManager {
       },
     });
 
+    page.destroyed$.subscribe(() => {
+      this.pagesSubject.next(
+        this.pagesSubject.value.filter(p => p !== page),
+      );
+    });
+
     this.pagesSubject.next([
       ...this.pagesSubject.value,
       page,
@@ -51,27 +57,19 @@ export class PageManager {
     return setup$;
   }
 
-  public closeTab (tabToRemove : any) {
+  closeTab (tabToRemove : any) {
     const pages = this.pagesSubject.value;
 
     if (!pages.length) {
       return of(null);
     }
 
-    return combineLatest(pages.map(page => page.equals(tabToRemove)
-      .pipe(
-        map(isEqual => (<[Page, boolean]>[page, isEqual])),
-      )))
-      .pipe(
-        tap(combinations => {
-          const remainingPages = combinations
-            .filter(([_, isEqual]) => !isEqual)
-            .map(([page]) => page);
-
-          this.pagesSubject.next(remainingPages);
-        }),
-        mapTo(null),
-      );
+    return combineLatest(
+      pages.map(page => page.equals(tabToRemove)
+        .pipe(
+          tap(isEqual => isEqual && page.destroy()),
+        )),
+    );
   }
 
   getTab (index? : number) {
@@ -98,7 +96,6 @@ export class PageManager {
 
     return this.openNewTab()
       .pipe(
-        tap(page => this.pagesSubject.next([page])),
         flatMap(() => combineLatest(
           pagesToClose.map(page => page.destroy()),
         )),
@@ -119,27 +116,11 @@ export class PageManager {
           ]);
         }),
         mapTo(undefined),
-      )
+      );
   }
 
   closeTabAtIndex (index) {
-    return this.getTab(index)
-      .destroy()
-      .pipe(
-        tap(() => {
-          const remainingPages = this.pagesSubject.value.filter((page, i) => i !== index);
-          this.pagesSubject.next(remainingPages);
-
-          const activeIndex = this.activePageIndexSubject.value;
-
-          if (activeIndex === index) {
-            const newIndex = Math.max(0, Math.min(activeIndex, remainingPages.length - 1));
-            if (newIndex !== index) {
-              this.activePageIndexSubject.next(newIndex);
-            }
-          }
-        }),
-      );
+    return this.getTab(index).destroy();
   }
 
   private keepActiveIndexInsideBounds () {

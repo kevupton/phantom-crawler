@@ -85,21 +85,22 @@ export class Browser extends ManagerItem implements IBrowser {
     return this.pageManager.closeTabAtIndex(index);
   }
 
-  protected handleConstruction () {
-    return this.setupNewBrowser();
-  }
-
   protected handleDestruct () {
+    return this.caseManager(
+      chromeBrowser => from(chromeBrowser.close()),
+      phantomBrowser => {
+        phantomBrowser.exit();
+        return of(null);
+      },
+    );
   }
 
-  private setupNewBrowser () {
+  protected handleConstruction () {
     switch (this.browserType) {
       case BrowserType.Chrome:
-        this.launchPuppeteer();
-        break;
+        return this.launchPuppeteer();
       case BrowserType.PhantomJS:
-        this.launchPhantomJS();
-        break;
+        return this.launchPhantomJS();
       default:
         throw new Error('Invalid browser type supplied');
     }
@@ -128,17 +129,18 @@ export class Browser extends ManagerItem implements IBrowser {
     }))
       .pipe(
         tap(browser => {
-          from(browser.version()).subscribe(version => {
-            console.info('[INFO] Running Chromium browser version: ', version);
-          });
+          from(browser.version())
+            .subscribe(version => {
+              console.info('[INFO] Running Chromium browser version: ', version);
+            });
 
-          this.browserSubject.next({
-            chromeBrowser: browser,
-          });
+          this.browserSubject.next({ chromeBrowser: browser });
+          this.browserSubject.complete();
 
-          this.on$('targetdestroyed').pipe(
-            flatMap(([target]) => from(target.page())),
-          )
+          this.on$('targetdestroyed')
+            .pipe(
+              flatMap(([target]) => from(target.page())),
+            )
             .subscribe((page) => {
               this.pageManager.closeTab(page);
             });
