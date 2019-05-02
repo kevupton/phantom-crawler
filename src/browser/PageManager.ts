@@ -37,7 +37,8 @@ export class PageManager {
       const page = new Page(this.browser);
 
       subscriber.add(page.setup().pipe(
-        flatMap(() => page.setViewport(1800, 1200))
+        flatMap(() => page.setViewport(1800, 1200)),
+        flatMap(() => page.bringToFront()),
       ).subscribe({
         complete: () => {
           page.destroyed$.subscribe(() => {
@@ -56,8 +57,6 @@ export class PageManager {
         },
       }));
     });
-
-
   }
 
   closeTab (tabToRemove : any) {

@@ -3,9 +3,14 @@ import { Browser, BrowserType } from './Browser';
 
 export class BrowserManager {
   private readonly browsersSubject = new BehaviorSubject<Browser[]>([]);
+  private readonly activeBrowserIndexSubject = new BehaviorSubject(0);
 
   get browsers () {
     return this.browsersSubject.value;
+  }
+
+  getActiveBrowser() {
+
   }
 
   reset () {
