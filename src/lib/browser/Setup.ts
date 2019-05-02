@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { mapTo } from 'rxjs/operators';
+import { mapTo, shareReplay } from 'rxjs/operators';
 
 export enum SetupStage {
   Inactive,
@@ -17,7 +17,10 @@ export abstract class Setup {
     }
 
     this.setupStage = SetupStage.Constructed;
-    return this.handleSetup().pipe(mapTo(undefined));
+    return this.handleSetup().pipe(
+      mapTo(undefined),
+      shareReplay(1),
+    );
   }
 
   protected abstract handleSetup() : Observable<any>;
@@ -28,7 +31,10 @@ export abstract class Setup {
    }
 
    this.setupStage = SetupStage.Destructed;
-   return this.handleDestruct().pipe(mapTo(undefined));
+   return this.handleDestruct().pipe(
+     mapTo(undefined),
+     shareReplay(1),
+   );
   }
 
   protected abstract handleDestruct () : Observable<any>;

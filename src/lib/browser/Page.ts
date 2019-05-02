@@ -324,7 +324,7 @@ export class Page extends Setup implements IPage {
     return from(browser.newPage())
       .pipe(
         tap(page => this.pageSubject.next({ chromePage: page })),
-        mapTo(null),
+        mapTo(undefined),
       );
   }
 

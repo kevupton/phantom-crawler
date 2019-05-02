@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
 import { Browser } from './Browser';
 import { Page } from './Page';
@@ -8,14 +8,14 @@ export class PageManager {
   private readonly activePageIndexSubject = new BehaviorSubject(0);
 
   public readonly activePage$ = combineLatest([
-      this.pagesSubject.asObservable(),
-      this.activePageIndexSubject.asObservable(),
-    ])
-      .pipe(
-        map(([pages, activeIndex]) => pages[activeIndex]),
-        distinctUntilChanged(),
-        shareReplay(1),
-      );
+    this.pagesSubject.asObservable(),
+    this.activePageIndexSubject.asObservable(),
+  ])
+    .pipe(
+      map(([pages, activeIndex]) => pages[activeIndex]),
+      distinctUntilChanged(),
+      shareReplay(1),
+    );
 
   public readonly hasPages$ = this.pagesSubject
     .pipe(
@@ -29,7 +29,7 @@ export class PageManager {
   ) {
   }
 
-  createNewPage() {
+  createNewPage () {
     const page = new Page(this.browser);
 
     const setup$ = page.setup();
@@ -37,7 +37,7 @@ export class PageManager {
     setup$.subscribe({
       complete: () => {
         page.setViewport(1800, 1200);
-      }
+      },
     });
 
     this.pagesSubject.next([
