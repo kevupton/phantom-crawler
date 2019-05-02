@@ -147,9 +147,6 @@ export class Browser extends ManagerItem implements IBrowser {
               console.info('[INFO] Running Chromium browser version: ', version);
             });
 
-          this.browserSubject.next({ chromeBrowser: browser });
-          this.browserSubject.complete();
-
           const eventSubscription = this.on$('targetdestroyed')
             .pipe(
               flatMap(([target]) => from(target.page())),
@@ -160,10 +157,16 @@ export class Browser extends ManagerItem implements IBrowser {
 
           this.unsubscribeOnDestroy(eventSubscription);
         }),
-        flatMap(browser => from(browser.pages())),
-        tap(pages => this.pageManager.registerPages(
-          pages.map(page => (<IPagePossibilities>{ chromePage: page })),
+        flatMap(browser => from(browser.pages()).pipe(
+          tap(pages => this.pageManager.registerPages(
+            pages.map(page => (<IPagePossibilities>{ chromePage: page })),
+          )),
+          mapTo(browser),
         )),
+        tap((browser) => {
+          this.browserSubject.next({ chromeBrowser: browser });
+          this.browserSubject.complete();
+        })
       );
   }
 

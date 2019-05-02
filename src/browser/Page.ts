@@ -52,6 +52,8 @@ export interface IPage {
   setViewport (width : number, height : number) : Observable<void>;
 
   bringToFront () : Observable<void>;
+
+  setContent (html : string) : Observable<void>;
 }
 
 export interface IOpenResponse {
@@ -357,6 +359,12 @@ export class Page extends ManagerItem implements IPage {
   equals (test : any) {
     return this.pageSubject.pipe(
       map(({ chromePage, phantomPage }) => chromePage === test || phantomPage === test || test === this),
+    );
+  }
+
+  setContent (html : string) : Observable<void> {
+    return this.caseManager(
+      chromePage => from(chromePage.setContent(html)),
     );
   }
 
