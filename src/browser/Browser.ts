@@ -4,7 +4,7 @@ import { AsyncSubject, Observable } from 'rxjs';
 import { from } from 'rxjs/internal/observable/from';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
-import { flatMap } from 'rxjs/operators';
+import { flatMap, mapTo } from 'rxjs/operators';
 import { EventCallback, RxjsBasicEventManager } from '../lib/RxjsBasicEventManager';
 import { ManagerItem } from './ManagerItem';
 import { IPagePossibilities, Page } from './Page';
@@ -47,6 +47,12 @@ export class Browser extends ManagerItem implements IBrowser {
     (event, fn) => this.deregisterEvent(event, fn),
   );
 
+  public readonly activePage$ = this.pageManager.activeInstance$;
+
+  get pages () {
+    return this.pageManager.instances;
+  }
+
   get browser$ () {
     return this.browserSubject.asObservable();
   }
@@ -69,8 +75,18 @@ export class Browser extends ManagerItem implements IBrowser {
     return this.pageManager.getInstance(tabIndex);
   }
 
-  openNewTab () : Observable<Page> {
-    return this.pageManager.openNewInstance();
+  openNewTab (url? : string) : Observable<Page> {
+    return this.pageManager.openNewInstance()
+      .pipe(
+        flatMap(page => {
+          if (url) {
+            return page.open(url);
+          }
+
+          return of(null);
+        }),
+        mapTo(undefined)
+      );
   }
 
   setActiveTab (index : any) : Observable<void> {

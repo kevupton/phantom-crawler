@@ -1,9 +1,10 @@
-import { PhantomJS, WebPage as PhantomPage } from 'phantom';
+import { WebPage as PhantomPage } from 'phantom';
 import {
   Browser as Chrome,
   ClickOptions,
   EvaluateFn,
   NavigationOptions,
+  Cookie,
   Page as ChromePage,
   ScreenshotOptions,
 } from 'puppeteer';
@@ -52,15 +53,15 @@ export interface IPage {
   bringToFront () : Observable<void>;
 }
 
-interface IOpenResponse {
+export interface IOpenResponse {
   status : number;
 }
 
-interface IClickOptions {
+export interface IClickOptions {
   options? : ClickOptions;
 }
 
-interface IScrollToResult {
+export interface IScrollToResult {
   scrolled : boolean;
   error? : string;
   scrollTop? : number;
@@ -71,19 +72,19 @@ export interface IPagePossibilities {
   chromePage? : ChromePage;
 }
 
-interface DomOptions {
+export interface DomOptions {
   selector : string;
   xpath? : boolean;
 }
 
-interface TypeOptions {
+export interface TypeOptions {
   options? : {
     delay : number;
   };
   text : string;
 }
 
-interface ScrollTopOptions {
+export interface ScrollTopOptions {
   top : number;
 }
 
@@ -316,13 +317,25 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
+  back() : Observable<void> {
+    return this.caseManager(
+      chromePage => from(chromePage.goBack()),
+    )
+  }
+
   refresh (options? : NavigationOptions) : Observable<void> {
     return this.caseManager(
       chromePage => from(chromePage.reload(options)),
     );
   }
 
-  getUrl () {
+  getCookies() : Observable<Cookie[]> {
+    return this.caseManager(
+      chromePage => from(chromePage.cookies()),
+    );
+  }
+
+  getUrl () : Observable<string> {
     return this.caseManager(
       chromePage => of(chromePage.url()),
     );

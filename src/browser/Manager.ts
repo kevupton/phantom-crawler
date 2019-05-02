@@ -12,7 +12,7 @@ export abstract class Manager<T extends ManagerItem> {
   protected readonly instancesSubject   = new BehaviorSubject<T[]>([]);
   protected readonly activeIndexSubject = new BehaviorSubject(0);
 
-  protected readonly activeInstance$ = combineLatest([
+  public readonly activeInstance$ = combineLatest([
     this.instancesSubject,
     this.activeIndexSubject,
   ]).pipe(
@@ -28,6 +28,10 @@ export abstract class Manager<T extends ManagerItem> {
     shareReplay(1),
     first(),
   );
+
+  get instances () {
+    return this.instancesSubject.value.concat();
+  }
 
   protected constructor () {
     this.keepActiveIndexInsideBounds();

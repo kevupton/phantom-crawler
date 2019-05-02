@@ -1,91 +1,129 @@
-import { Cookie, Response } from 'puppeteer';
+import { combineLatest } from 'rxjs/internal/observable/combineLatest';
+import { of } from 'rxjs/internal/observable/of';
+import { tap } from 'rxjs/internal/operators/tap';
+import { flatMap, map } from 'rxjs/operators';
 import { Controller } from '../server/Controller';
 import { Exception } from '../server/exceptions/Exception';
 
 export class BrowserController extends Controller {
-  async active () {
-    return {
-      isActive: Phantom.instance.hasPage,
-      url: await Phantom.instance.getProperty('url'),
-    };
+  active () {
+    return this.activePage$.pipe(
+      flatMap(page => page.getUrl()),
+      map(url => ({ url })),
+    );
   }
 
-  async cookies () : Promise<{
-    cookies : Cookie[]
-  }> {
-    return {
-      cookies: await this.browser.activePage.cookies(),
-    };
+  cookies () {
+    return this.activePage$.pipe(
+      flatMap(page => page.getCookies()),
+      map(cookies => ({ cookies })),
+    );
   }
 
-  async reset () {
-    return await this.browser.reset();
+  reset () {
+    return this.activeBrowser$.pipe(
+      tap(browser => browser.reset()),
+    );
   }
 
-  async back () : Promise<Response | null> {
-    return await this.browser.activePage.goBack();
+  back () {
+    return this.activePage$.pipe(
+      tap(page => page.back()),
+    );
   }
 
-  async display ({ index }) {
-    this.response.html(await this.browser.getContent(index));
+  display ({ tabIndex }) {
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.getContent()),
+        tap(content => this.response.html(content)),
+      );
   }
 
-  async active_url ({ index }) {
-    return { url: this.browser.getUrl(index) || null };
+  active_url ({ tabIndex }) {
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.getUrl()),
+        map(url => ({ url })),
+      );
   }
 
-  async download () {
-    this.response.file(await this.browser.content, 'content.html');
+  download () {
+    return this.activePage$.pipe(
+      flatMap(page => page.getContent()),
+      tap(content => {
+        this.response.file(content, 'content.html');
+      }),
+    );
   }
 
-  async getTabs () {
-    return {
-      pages: this.browser.pages.map((page, index) => ({
-        index,
-        page: page.url(),
+  getTabs () {
+    return this.activeBrowser$.pipe(
+      flatMap(browser => combineLatest(browser.pages.map(page => page.getUrl()))),
+      map(urls => ({
+        pages: urls.map((page, index) => ({ index, page })),
       })),
-    };
+    );
   }
 
-  async setActiveTab ({ index }) {
-    await this.browser.setActiveTab(index);
+  setActiveTab ({ tabIndex }) {
+    return this.activeBrowser$.pipe(
+      flatMap(browser => browser.setActiveTab(tabIndex)),
+    );
   }
 
-  async closeTab ({ index }) {
-    await this.browser.closeTabIndex(index);
+  closeTab ({ tabIndex }) {
+    return this.activeBrowser$.pipe(
+      flatMap(browser => browser.closeTab(tabIndex)),
+    );
   }
 
-  async openNewTab ({ url }) {
-    const index = await this.browser.openNewTab();
-    await this.browser.setActiveTab(index);
-
-    if (url) {
-      return await this.get({ url });
-    }
+  openNewTab ({ url }) {
+    return this.activeBrowser$.pipe(
+      flatMap(browser => browser.openNewTab(url)),
+    );
   }
 
-  async refresh ({ tabIndex, options }) {
-    await this.browser.refresh(tabIndex, options);
+  refresh ({ tabIndex, options }) {
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.refresh(options)),
+      );
   }
 
-  async screenshot ({ tabIndex, options }) {
-    const image = await this.browser.screenshot(tabIndex, options);
-    return { image };
+  screenshot ({ tabIndex, options }) {
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.captureScreenshot(options)),
+        map(image => ({ image })),
+      );
   }
 
-  async get ({ url, tabIndex } : { url : string, tabIndex? : number }) {
-    await this.browser.open(url, tabIndex);
-    return await this.browser.getContent(tabIndex);
+  get ({ url, tabIndex }) {
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap((page) => {
+          let obs = of(null);
+          if (url) {
+            obs = page.open(url);
+          }
+          return obs.pipe(flatMap(() => page.getContent()));
+        }),
+      );
   }
 
-  async goto ({ url, tabIndex }) {
-    return await this.browser.open(url, tabIndex);
+  goto ({ url, tabIndex }) {
+    return this.getActiveBrowserPage(tabIndex).pipe(
+      flatMap(page => page.open(url)),
+    );
   }
 
-  async headers ({ headers }) {
+  headers ({ headers }) {
     if (!headers) throw new Exception('Expected headers to be defined', 400);
 
-    this.browser.headers(headers);
+    return this.activeBrowser$.pipe(
+      flatMap(browser => browser.headers(headers)),
+    )
   }
 }
 
