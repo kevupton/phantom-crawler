@@ -4,6 +4,7 @@ var nodeExternals = require('webpack-node-externals');
 module.exports = {
   entry: './src/index.ts',
   target: 'node',
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'lib'),
     filename: 'app.js',

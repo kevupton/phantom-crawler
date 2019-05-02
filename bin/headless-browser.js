@@ -2,5 +2,5 @@
 
 const app = require('../lib/app.js');
 
-app.loadArgs();
+app.readArgs();
 app.startServer();

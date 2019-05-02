@@ -1,5 +1,5 @@
 import { PhantomJS } from 'phantom';
-import { Browser as Chrome, BrowserEventObj, launch as launchPuppeteer } from 'puppeteer';
+import { Browser as Chrome, BrowserEventObj, default as puppeteer } from 'puppeteer';
 import { AsyncSubject, from, Observable } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
@@ -135,7 +135,7 @@ export class Browser extends ManagerItem implements IBrowser {
 
     console.info('[INFO] Starting Chromium browser');
 
-    return from(launchPuppeteer({
+    return from(puppeteer.launch({
       headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
       args: args,
     }))

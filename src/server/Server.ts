@@ -1,5 +1,5 @@
 import * as bodyParser from 'body-parser';
-import * as express from 'express';
+import express from 'express';
 import { BrowserManager } from '../browser/BrowserManager';
 import { environment } from '../lib/Environment';
 import { routes } from './routes';
