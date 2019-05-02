@@ -1,8 +1,13 @@
 import { PhantomJS } from 'phantom';
-import { Browser as Chrome, default as puppeteer } from 'puppeteer';
-import { AsyncSubject, BehaviorSubject, iif, Observable } from 'rxjs';
+import { Browser as Chrome, BrowserEventObj, default as puppeteer } from 'puppeteer';
+import { AsyncSubject, Observable } from 'rxjs';
 import { from } from 'rxjs/internal/observable/from';
-import { distinctUntilChanged, filter, map, shareReplay } from 'rxjs/operators';
+import { of } from 'rxjs/internal/observable/of';
+import { tap } from 'rxjs/internal/operators/tap';
+import { flatMap } from 'rxjs/operators';
+import { EventCallback, RxjsBasicEventManager } from '../RxjsBasicEventManager';
+import { ManagerItem } from './ManagerItem';
+import { IPagePossibilities, Page } from './Page';
 import { PageManager } from './PageManager';
 
 export enum BrowserType {
@@ -18,17 +23,11 @@ export interface IBrowserOptions {
 }
 
 export interface IBrowser {
-  getContent (index ? : number) : Observable<string>;
-
   reset () : Observable<void>;
 
-  onPageNavigation (fn : Function) : void;
+  getTab (tabIndex : number) : Page;
 
-  offPageNavigation (fn : Function) : void;
-
-  open (url : string, tabIndex : number) : Observable<{ status : number }>;
-
-  openNewTab () : Observable<void>;
+  openNewTab () : Observable<Page>;
 
   setActiveTab (index) : Observable<void>;
 
@@ -36,31 +35,61 @@ export interface IBrowser {
 }
 
 export interface IBrowserPossibilities {
-  chromeBrowser : Chrome;
-  phantomBrowser : PhantomJS;
+  chromeBrowser? : Chrome;
+  phantomBrowser? : PhantomJS;
 }
 
-export class Browser implements IBrowser {
-
-  private readonly browser = new AsyncSubject<IBrowserPossibilities>();
-  private readonly pageManager = new PageManager(this);
+export class Browser extends ManagerItem implements IBrowser {
+  private readonly browserSubject = new AsyncSubject<IBrowserPossibilities>();
+  private readonly pageManager    = new PageManager(this);
+  private readonly eventManager   = new RxjsBasicEventManager(
+    (event, fn) => this.registerEvent(event, fn),
+    (event, fn) => this.deregisterEvent(event, fn),
+  );
 
   get browser$ () {
-    return this.browser.asObservable();
+    return this.browserSubject.asObservable();
   }
 
   constructor (
     public readonly browserType : BrowserType,
   ) {
-      this.setupNewBrowser();
+    super();
   }
 
-  isChromeBrowser(browser : Chrome | PhantomJS) : browser is Chrome {
-    return this.browserType === BrowserType.Chrome;
+  on$<K extends keyof BrowserEventObj> (event : K) : Observable<[BrowserEventObj[K], ...any[]]> {
+    return this.eventManager.getEvent$(event);
   }
 
-  isPhantomJSBrowser(browser : Chrome | PhantomJS) : browser is PhantomJS {
-    return this.browserType === BrowserType.PhantomJS;
+  reset () : Observable<void> {
+    return this.pageManager.reset();
+  }
+
+  getTab (tabIndex : number) {
+    const tab = this.pageManager.getTab(tabIndex);
+    if (!tab) {
+      throw new Error('Tab does not exist');
+    }
+    return tab;
+  }
+
+  openNewTab () : Observable<Page> {
+    return this.pageManager.openNewTab();
+  }
+
+  setActiveTab (index : any) : Observable<void> {
+    return this.pageManager.setActiveTab(index);
+  }
+
+  closeTab (index : any) : Observable<void> {
+    return this.pageManager.closeTabAtIndex(index);
+  }
+
+  protected handleConstruction () {
+    return this.setupNewBrowser();
+  }
+
+  protected handleDestruct () {
   }
 
   private setupNewBrowser () {
@@ -93,41 +122,74 @@ export class Browser implements IBrowser {
 
     console.info('[INFO] Starting Chromium browser');
 
-    puppeteer.launch({
+    return from(puppeteer.launch({
       headless: !(process.env.DEBUG || process.env.OPEN_BROWSER),
       args: args,
-    })
-      .then(async browser => {
-        console.info('[INFO] Running Chromium browser version: ', await browser.version());
+    }))
+      .pipe(
+        tap(browser => {
+          from(browser.version()).subscribe(version => {
+            console.info('[INFO] Running Chromium browser version: ', version);
+          });
 
-        browser.on('targetdestroyed', async target => {
-          try {
-            const page = await target.page();
-            if (page === this.activePage) {
-              this.pageManager.remove(this.activePageTabSubject, 1);
-            }
-          }
-          catch (e) {
-            console.error('TargetDestroyed Error: ', e);
-          }
-        });
+          this.browserSubject.next({
+            chromeBrowser: browser,
+          });
 
-        const pages$ = from(browser.pages());
-
-        for (let i = 0; i < this.pagesSubject.length; i++) {
-          await this.setViewport(this.pagesSubject[i]);
-        }
-
-        return browser;
-      })
-      .catch(e => {
-        console.error('New Browser Method error', e);
-        return null;
-      });
+          this.on$('targetdestroyed').pipe(
+            flatMap(([target]) => from(target.page())),
+          )
+            .subscribe((page) => {
+              this.pageManager.closeTab(page);
+            });
+        }),
+        flatMap(browser => from(browser.pages())),
+        tap(pages => this.pageManager.registerPages(
+          pages.map(page => (<IPagePossibilities>{ chromePage: page })),
+        )),
+      );
   }
 
   private launchPhantomJS () {
     throw new Error('PhantomJS is not implemented at this stage');
   }
 
+  private caseManager (
+    chromeMethod : (chromeBrowser : Chrome) => Observable<any>,
+    phantomMethod? : (phantomBrowser : PhantomJS) => Observable<any>,
+  ) {
+    return this.browserSubject.pipe(
+      flatMap(({ chromeBrowser, phantomBrowser }) => {
+        if (chromeBrowser) {
+          return chromeMethod(chromeBrowser);
+        }
+        else if (phantomBrowser) {
+          if (!phantomMethod) {
+            throw new Error('Phantom Browser has not been implemented as of yet.');
+          }
+          else {
+            phantomMethod(phantomBrowser);
+          }
+        }
+      }),
+    );
+  }
+
+  private registerEvent (event : string, fn : EventCallback) {
+    return this.caseManager(
+      chromeBrowser => {
+        chromeBrowser.addListener(event, fn);
+        return of(null);
+      },
+    );
+  }
+
+  private deregisterEvent (event : string, fn : EventCallback) {
+    return this.caseManager(
+      chromeBrowser => {
+        chromeBrowser.removeListener(event, fn);
+        return of(null);
+      },
+    );
+  }
 }

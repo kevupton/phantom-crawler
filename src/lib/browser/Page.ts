@@ -13,11 +13,13 @@ import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
 import { flatMap, map, mapTo } from 'rxjs/operators';
 import { Browser } from './Browser';
-import { Setup } from './Setup';
+import { ManagerItem } from './ManagerItem';
 
 export interface IPage {
 
-  open(url) : Observable<IOpenResponse>;
+  getContent () : Observable<string>;
+
+  open (url) : Observable<IOpenResponse>;
 
   run<R> (fn : EvaluateFn, ...args : any[]) : Observable<void>;
 
@@ -46,6 +48,8 @@ export interface IPage {
   getUrl () : Observable<string>;
 
   setViewport (width : number, height : number) : Observable<void>;
+
+  bringToFront () : Observable<void>;
 }
 
 interface IOpenResponse {
@@ -62,7 +66,7 @@ interface IScrollToResult {
   scrollTop? : number;
 }
 
-interface IPagePossibilities {
+export interface IPagePossibilities {
   phantomPage? : PhantomPage;
   chromePage? : ChromePage;
 }
@@ -83,23 +87,36 @@ interface ScrollTopOptions {
   top : number;
 }
 
-export class Page extends Setup implements IPage {
+export class Page extends ManagerItem implements IPage {
 
   private readonly pageSubject = new AsyncSubject<IPagePossibilities>();
 
   constructor (
     private readonly browser : Browser,
+    existingPage? : IPagePossibilities,
   ) {
     super();
+
+    if (existingPage) {
+      this.pageSubject.next(existingPage);
+      this.pageSubject.complete();
+    }
+  }
+
+  getContent () : Observable<string> {
+    return this.caseManager(
+      chromePage => from(chromePage.content()),
+    );
   }
 
   open (url : string) : Observable<IOpenResponse> {
     return this.caseManager(
-      chromePage => from(chromePage.goto(url, { timeout: 300000 })).pipe(
-        map(response => ({
-          status: response.status()
-        })),
-      ),
+      chromePage => from(chromePage.goto(url, { timeout: 300000 }))
+        .pipe(
+          map(response => ({
+            status: response.status(),
+          })),
+        ),
     );
   }
 
@@ -317,11 +334,26 @@ export class Page extends Setup implements IPage {
     });
   }
 
-  handleDestruct () {
-    return of(null);
+  protected handleDestruct () {
+    return this.caseManager(
+      chromePage => from(chromePage.close()),
+      phantomPage => from(phantomPage.close()),
+    );
   }
 
-  handleSetup () {
+  equals (test : any) {
+    return this.pageSubject.pipe(
+      map(({ chromePage, phantomPage }) => chromePage === test || phantomPage === test || test === this),
+    );
+  }
+
+  bringToFront () {
+    return this.caseManager(
+      chromePage => from(chromePage.bringToFront()),
+    );
+  }
+
+  protected handleConstruction () {
     return this.browser.browser$.pipe(
       flatMap(({ chromeBrowser, phantomBrowser }) => {
         if (chromeBrowser) {
@@ -337,10 +369,13 @@ export class Page extends Setup implements IPage {
     );
   }
 
-  createNewChromiumPage (browser : Chrome) {
+  private createNewChromiumPage (browser : Chrome) {
     return from(browser.newPage())
       .pipe(
-        tap(page => this.pageSubject.next({ chromePage: page })),
+        tap(page => {
+          this.pageSubject.next({ chromePage: page });
+          this.pageSubject.complete();
+        }),
         mapTo(undefined),
       );
   }
@@ -356,7 +391,7 @@ export class Page extends Setup implements IPage {
         }
         else if (phantomPage) {
           if (!phantomMethod) {
-            throw new Error('Set viewport not implemented for PhantomJS');
+            throw new Error('PhantomJS Pages have not been implemented yet.');
           }
           else {
             phantomMethod(phantomPage);
@@ -369,4 +404,5 @@ export class Page extends Setup implements IPage {
   private getChromeItems (chromePage : ChromePage, selector : string, xpath? : boolean) {
     return xpath ? from(chromePage.$x(selector)) : from(chromePage.$$(selector));
   }
+
 }
