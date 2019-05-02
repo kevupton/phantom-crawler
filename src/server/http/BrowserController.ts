@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { combineLatest } from 'rxjs/internal/observable/combineLatest';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
-import { flatMap, map } from 'rxjs/operators';
+import { flatMap, map, mapTo } from 'rxjs/operators';
 import { Controller } from '../Controller';
 
 export class BrowserController extends Controller {
@@ -81,6 +81,7 @@ export class BrowserController extends Controller {
   openNewTab ({ url } : any) {
     return this.activeBrowser$.pipe(
       flatMap(browser => browser.openNewTab(url)),
+      mapTo(undefined),
     );
   }
 

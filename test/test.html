@@ -1,0 +1,965 @@
+
+<!DOCTYPE html>
+<html>
+<head ng-controller='ApplicationController'>
+  <script>window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","errorBeacon":"bam.nr-data.net","licenseKey":"b2bc89fc76","applicationID":"102993731","transactionName":"cl1ZFhRfDQ9WFxpZXFxXGAsIVAQb","queueTime":0,"applicationTime":16,"agent":""}</script>
+  <script>window.NREUM||(NREUM={}),__nr_require=function(e,n,t){function r(t){if(!n[t]){var o=n[t]={exports:{}};e[t][0].call(o.exports,function(n){var o=e[t][1][n];return r(o||n)},o,o.exports)}return n[t].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<t.length;o++)r(t[o]);return r}({1:[function(e,n,t){function r(){}function o(e,n,t){return function(){return i(e,[c.now()].concat(u(arguments)),n?null:this,t),n?void 0:this}}var i=e("handle"),a=e(3),u=e(4),f=e("ee").get("tracer"),c=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var p=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],d="api-",l=d+"ixn-";a(p,function(e,n){s[n]=o(d+n,!0,"api")}),s.addPageAction=o(d+"addPageAction",!0),s.setCurrentRouteName=o(d+"routeName",!0),n.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,n){var t={},r=this,o="function"==typeof n;return i(l+"tracer",[c.now(),e,t],r),function(){if(f.emit((o?"":"no-")+"fn-start",[c.now(),r,o],t),o)try{return n.apply(this,arguments)}catch(e){throw f.emit("fn-err",[arguments,this,e],t),e}finally{f.emit("fn-end",[c.now()],t)}}}};a("actionText,setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,n){m[n]=o(l+n)}),newrelic.noticeError=function(e,n){"string"==typeof e&&(e=new Error(e)),i("err",[e,c.now(),!1,n])}},{}],2:[function(e,n,t){function r(e,n){if(!o)return!1;if(e!==o)return!1;if(!n)return!0;if(!i)return!1;for(var t=i.split("."),r=n.split("."),a=0;a<r.length;a++)if(r[a]!==t[a])return!1;return!0}var o=null,i=null,a=/Version\/(\S+)\s+Safari/;if(navigator.userAgent){var u=navigator.userAgent,f=u.match(a);f&&u.indexOf("Chrome")===-1&&u.indexOf("Chromium")===-1&&(o="Safari",i=f[1])}n.exports={agent:o,version:i,match:r}},{}],3:[function(e,n,t){function r(e,n){var t=[],r="",i=0;for(r in e)o.call(e,r)&&(t[i]=n(r,e[r]),i+=1);return t}var o=Object.prototype.hasOwnProperty;n.exports=r},{}],4:[function(e,n,t){function r(e,n,t){n||(n=0),"undefined"==typeof t&&(t=e?e.length:0);for(var r=-1,o=t-n||0,i=Array(o<0?0:o);++r<o;)i[r]=e[n+r];return i}n.exports=r},{}],5:[function(e,n,t){n.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,n,t){function r(){}function o(e){function n(e){return e&&e instanceof r?e:e?f(e,u,i):i()}function t(t,r,o,i){if(!d.aborted||i){e&&e(t,r,o);for(var a=n(o),u=v(t),f=u.length,c=0;c<f;c++)u[c].apply(a,r);var p=s[y[t]];return p&&p.push([b,t,r,a]),a}}function l(e,n){h[e]=v(e).concat(n)}function m(e,n){var t=h[e];if(t)for(var r=0;r<t.length;r++)t[r]===n&&t.splice(r,1)}function v(e){return h[e]||[]}function g(e){return p[e]=p[e]||o(t)}function w(e,n){c(e,function(e,t){n=n||"feature",y[t]=n,n in s||(s[n]=[])})}var h={},y={},b={on:l,addEventListener:l,removeEventListener:m,emit:t,get:g,listeners:v,context:n,buffer:w,abort:a,aborted:!1};return b}function i(){return new r}function a(){(s.api||s.feature)&&(d.aborted=!0,s=d.backlog={})}var u="nr@context",f=e("gos"),c=e(3),s={},p={},d=n.exports=o();d.backlog=s},{}],gos:[function(e,n,t){function r(e,n,t){if(o.call(e,n))return e[n];var r=t();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,n,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return e[n]=r,r}var o=Object.prototype.hasOwnProperty;n.exports=r},{}],handle:[function(e,n,t){function r(e,n,t,r){o.buffer([e],r),o.emit(e,n,t)}var o=e("ee").get("handle");n.exports=r,r.ee=o},{}],id:[function(e,n,t){function r(e){var n=typeof e;return!e||"object"!==n&&"function"!==n?-1:e===window?0:a(e,i,function(){return o++})}var o=1,i="nr@id",a=e("gos");n.exports=r},{}],loader:[function(e,n,t){function r(){if(!E++){var e=x.info=NREUM.info,n=l.getElementsByTagName("script")[0];if(setTimeout(s.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&n))return s.abort();c(y,function(n,t){e[n]||(e[n]=t)}),f("mark",["onload",a()+x.offset],null,"api");var t=l.createElement("script");t.src="https://"+e.agent,n.parentNode.insertBefore(t,n)}}function o(){"complete"===l.readyState&&i()}function i(){f("mark",["domContent",a()+x.offset],null,"api")}function a(){return O.exists&&performance.now?Math.round(performance.now()):(u=Math.max((new Date).getTime(),u))-x.offset}var u=(new Date).getTime(),f=e("handle"),c=e(3),s=e("ee"),p=e(2),d=window,l=d.document,m="addEventListener",v="attachEvent",g=d.XMLHttpRequest,w=g&&g.prototype;NREUM.o={ST:setTimeout,SI:d.setImmediate,CT:clearTimeout,XHR:g,REQ:d.Request,EV:d.Event,PR:d.Promise,MO:d.MutationObserver};var h=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1123.min.js"},b=g&&w&&w[m]&&!/CriOS/.test(navigator.userAgent),x=n.exports={offset:u,now:a,origin:h,features:{},xhrWrappable:b,userAgent:p};e(1),l[m]?(l[m]("DOMContentLoaded",i,!1),d[m]("load",r,!1)):(l[v]("onreadystatechange",o),d[v]("onload",r)),f("mark",["firstbyte",u],null,"api");var E=0,O=e(5)},{}]},{},["loader"]);</script>
+  <script src="https://cdn.optimizely.com/js/2662170850.js" async></script>
+
+  <script async src="https://www.agtrader.com.au//js-sec.indexww.com/ht/p/186432-113682157139347.js"></script>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5NKRXDL');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- BEGIN Krux ControlTag for "agtrader.com.au" -->
+  <script class="kxct" data-id="soo8cr39o" data-timing="async" data-version="3.0" type="text/javascript">
+    window.Krux||((Krux=function(){Krux.q.push(arguments)}).q=[]);
+    (function(){
+      var k=document.createElement('script');k.type='text/javascript';k.async=true;
+      k.src=(location.protocol==='https:'?'https:':'http:')+'//cdn.krxd.net/controltag/soo8cr39o.js';
+      var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(k,s);
+    }());
+  </script>
+  <!-- END Krux ControlTag -->
+
+
+  <title ng-bind='title'>AgTrader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no, maximum-scale=1">
+  <base href="https://www.agtrader.com.au/">
+
+  <script type="text/javascript">
+    // IE bug workaround
+    if(!window.console) console = { log: function() {} };
+
+    // AgTrader Environment vars
+    var AGTRADER_STATICS = {
+      tenantCode: "atau",
+      railsEnv: "production",
+      source: 'agtrader'
+    };
+
+    // Agtrader Tenant Data
+    var digitalData = {"page":{"pageInfo":{"author":"","brand":"agtrader_au","generator":"AG","pageId":"","pageName":"AgTrader Homepage","sysEnv":"desktop","effectiveDate":"","issueDate":"","search":"","listing":""},"category":{"primaryCategory":"Home","subCategory1":"Index","subCategory2":"","subCategory3":"","subCategory4":"","pageType":"Homepage"},"item":{"topAd":{"title":"Claim this spot","description":"\"Top Ad\" slots are category-specific and appear above natural search results for greater visibility and a faster sale.","imageUrl":"/img/no-top-ad.png","url":"/secure/place-an-ad/details"}}},"titan":{"adSite":"AGTRADER","adZone":"SinglePageArchitechture","spa":true,"adKeyValues":{"cat":"agtrader","ctype":"homepage"},"adSlots":["adspot-728x90-pos1","adspot-300x250-pos1","adspot-300x250-pos2","adspot-728x90-pos2","adspot-1x11-pos1"]},"user":{"profile":{"profileInfo":{"profileId":""}},"membershipType":"visitor"},"version":"1.0"};
+
+    // Agtrader AU ad titan vars
+    window.titan = window.titan || {};
+    titan.requestAd = titan.requestAd || [];
+    titan.requestConditionalAd = titan.requestConditionalAd || [];
+    titan.cmd = titan.cmd || [];
+
+    // Nielson
+    var staticMetadataObject = {};
+
+  </script>
+  <script src="https://www.agtrader.com.au//assets.adobedtm.com/7d5ea80d054b96730162d0905d59678c4d2bf30c/satelliteLib-327a9205e41c868a0f24076df21fca232c340f76.js" async></script>
+
+
+  <script src="https://www.agtrader.com.au/assets/application_shared-92386e9c99001d1e21f48983496c45bc.js"></script>
+
+  <link rel="preload" as="font" href="https://www.agtrader.com.au/fonts/Bitter-Regular-webfont.woff" />
+  <link rel="preload" as="font" href="https://www.agtrader.com.au/fonts/Bitter-Italic-webfont.woff" />
+  <link rel="preload" as="font" href="https://www.agtrader.com.au/assets/fontawesome-webfont-bf917c43ec6d16447f6799ee94999ef0.woff" />
+
+  <link rel="preload" as="style" href="https://www.agtrader.com.au/js-webshim/dev/shims/styles/shim.css" />
+
+  <meta name="fragment" content="!" />
+  <link ng-if='canonicalUrl' rel="canonical" ng-href="{{canonicalUrl}}"/>
+  <link ng-if='nextUrl' rel="next" ng-href="{{nextUrl}}"/>
+  <link ng-if='prevUrl' rel="prev" ng-href="{{prevUrl}}"/>
+  <link rel="icon" type="image/x-icon" href="https://www.agtrader.com.au/img/favicon.atau.ico" />
+  <meta ng-if="metaDescription" name="description" content="{{metaDescription}}" />
+  <meta content="authenticity_token" name="csrf-param" />
+  <meta content="+Yh8dMhye8Z68wqkEDpic1v4IyoR56mlZ2uvettvNdU=" name="csrf-token" />
+
+  <script src='https://www.google.com/recaptcha/api.js?onload=vcRecaptchaApiLoaded&render=explicit' aysnc defer></script>
+</head>
+<!--
+  Titan gutters are adding overflow-x to body which impacts animations in the site.
+  So added inline style attribute to override overflow-x value
+-->
+<body class="boot-angular" ng-class="page">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5NKRXDL"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div ng-cloak ng-class="ifSourceIsNotAgtrader(source) ? 'main-wrap-without-bg': 'main-wrap'">
+  <div class="gutter-height" ng-hide="page == 'sell' || ifSourceIsNotAgtrader(source)">
+    <div id="adspot-728x90-pos1" class="leaderboard"></div>
+  </div>
+
+  <div style="position:sticky; z-index: 1; top: 0;">
+    <header id="navigation" ng-hide="ifSourceIsNotAgtrader(source)">
+      <div class="navbar" role="banner">
+        <div class="topbar">
+          <div class="container" ng-if="(currentUser.isAdmin && currentUser.isASalesRepresentative) || !currentUser.isASalesRepresentative">
+            <div id="topbar" class="navbar-header">
+              <div id="topbar-left">
+                <a class="navbar-brand" href="https://www.agtrader.com.au/" target="_self">
+                  <div class="agtrader-logo-white"></div>
+                </a>
+              </div>
+              <div id="topbar-right">
+                <div class="dropdown language-dropdown nav-dropdown">
+                  <a class='dropdown-main-heading' data-toggle="dropdown" href="#"><span class="change-text">News</span> <i class="fa fa-angle-down"></i></a>
+                  <ul id="news-dropdown-menu" class="dropdown-menu language-change">
+                    <li>
+                      <a target="_self" href="https://www.agtrader.com.au/news">News Home</a>
+                    </li>
+                    <li>
+                      <a target="_self" href="https://www.agtrader.com.au/news/agricultural-machinery">Machinery</a>
+                    </li>
+                    <li>
+                      <a target="_self" href="https://www.agtrader.com.au/news/livestock-cattle">Beef</a>
+                    </li>
+                    <li>
+                      <a target="_self" href="https://www.agtrader.com.au/news/livestock-sheep">Sheep</a>
+                    </li>
+                    <li>
+                      <a target="_self" href="https://www.agtrader.com.au/news/cropping">Cropping</a>
+                    </li>
+                  </ul>
+
+                </div>
+                <div class="dropdown language-dropdown nav-dropdown">
+                  <a class='dropdown-main-heading' data-toggle="dropdown" href="#"><span class="change-text">Buy</span> <i class="fa fa-angle-down"></i></a>
+                  <ul id="buy-categories-dropdown-menu" class="dropdown-menu language-change">
+                    <li>
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-md-2 col-sm-2">
+                            <h6>Popular</h6>
+                            <div class="content">
+                              <ul>
+                                <li><a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/tractors-for-sale">Tractors</a></li>
+                                <li><a target="" href="https://www.agtrader.com.au/category/vehicles/trucks">Trucks</a></li>
+                                <li><a target="" href="https://www.agtrader.com.au/category/vehicles/stock-crates">Trailers</a></li>
+                                <li><a target="" href="https://www.agtrader.com.au/category/livestock/cattle">Cattle</a></li>
+                                <li><a target="" href="https://www.agtrader.com.au/category/livestock/working-dogs">Working Dogs</a></li>
+                                <li><a target="" href="https://www.agtrader.com.au/search?page=1&dealer=GraysOnline">Auction</a></li>
+                                <li><a target="" href="https://www.agtrader.com.au/clearing-sales">Clearing sales</a></li>
+                              </ul>
+                            </div>
+                          </div>
+                          <div class="col-md-2 col-sm-2">
+                            <h6><a target="" href="https://www.agtrader.com.au/category/agricultural-machinery">Machinery</a></h6>
+                            <div class="content">
+                              <ul>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/cranes-lifting">
+                                    Cranes &amp; Lifting
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/agricultural-parts">
+                                    Parts &amp; Wrecking
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/tractor-attachments">
+                                    Attachments
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/cotton-picker">
+                                    Cotton Equipment
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/telehandler-lift-crane">
+                                    Forklifts &amp; Telehandlers
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/earthmoving-equipment">
+                                    Earthmoving
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/engines-motors">
+                                    Engines &amp; Motors
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/feed-mixer-shredder">
+                                    Feed Mixing &amp; Milling
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/grain-auger">
+                                    Grain Handling &amp; Cleaning
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/harvesting-headers">
+                                    Harvesting &amp; Headers
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/hay-baler-rake">
+                                    Hay &amp; Silage
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/metal-working">
+                                    Metal Working
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/rock-picker-rake">
+                                    Rock Pickers &amp; Rakers
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/rollers">
+                                    Rollers
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/slasher-mowing">
+                                    Slashing &amp; Mowing
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/boom-sprayer">
+                                    Spraying &amp; Pumping
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/spreader">
+                                    Spreaders
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/seeder-planter">
+                                    Tillage &amp; Seeding
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/tractors-for-sale">
+                                    Tractors
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/transport-bodies">
+                                    Transport Bodies
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/tyres">
+                                    Tyres
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/vineyard">
+                                    Vineyard &amp; Orchard
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/wood-working">
+                                    Wood Working
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/agricultural-machinery/other">
+                                    Other
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div class="col-md-2 col-sm-2">
+                            <h6><a target="" href="https://www.agtrader.com.au/category/livestock">Livestock</a></h6>
+                            <div class="content">
+                              <ul>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/buffalo">
+                                    Buffalo
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/camels">
+                                    Camels
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/ostriches">
+                                    Ostriches
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/agistment">
+                                    Agistment
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/alpaca">
+                                    Alpaca
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/cattle">
+                                    Cattle
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/livestock-feeding">
+                                    Feeds &amp; Grain
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/goats">
+                                    Goats
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/horses">
+                                    Horses
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/pigs">
+                                    Pigs
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/poultry">
+                                    Poultry
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/sheep">
+                                    Sheep
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/stock-sales">
+                                    Stock Sales
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/working-dogs">
+                                    Working Dogs
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/other">
+                                    Other
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/livestock/vermin-pest-control">
+                                    Vermin/pest Control
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          <div class="col-md-2 col-sm-2">
+                            <h6><a target="" href="https://www.agtrader.com.au/category/vehicles">Vehicles</a></h6>
+                            <div class="content">
+                              <ul>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/caravans-camping">
+                                    Caravans &amp; Camping
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/accessories">
+                                    Spares &amp; Accessories
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/motor-vehicles">
+                                    Motor Vehicles
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/motor-wrecking">
+                                    Motor Wrecking
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/atvs">
+                                    Quad Atvs &amp; Utility Vehicles
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/aviation">
+                                    Aviation
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/bus-coach">
+                                    Bus/coach
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/cars">
+                                    Cars
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/car-parts">
+                                    Car Parts
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/motorbikes">
+                                    Motorbikes
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/stock-crates">
+                                    Trailers
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/trucks">
+                                    Trucks
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/utes">
+                                    Utes
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/vans">
+                                    Vans
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/4wd">
+                                    4wd
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/truck-parts">
+                                    Truck Parts
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/vehicles/other">
+                                    Other
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          <div class="col-md-2 col-sm-2">
+                            <h6><a target="" href="https://www.agtrader.com.au/category/farm-equipment">Equipment</a></h6>
+                            <div class="content">
+                              <ul>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/clearing-sale-assorted-listings">
+                                    Assorted
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/workwear">
+                                    Workwear
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/farm-advisory">
+                                    Farm Advisory
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/farm-equipment">
+                                    Farm Equipment
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/horticulture">
+                                    Horticulture
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/solar">
+                                    Solar
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/fencing">
+                                    Fencing
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/fruit-viticulture">
+                                    Fruit &amp; Viticulture
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/gps-control-system">
+                                    Gps &amp; Guidance
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/livestock-management">
+                                    Livestock Management
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-equipment/other">
+                                    Other
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div class="col-md-2 col-sm-2">
+                            <h6><a target="" href="https://www.agtrader.com.au/category/farm-services">Services</a></h6>
+                            <div class="content">
+                              <ul>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/noticeboard">
+                                    Noticeboard
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/jobs">
+                                    Jobs
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/property">
+                                    Property
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/homestead-services">
+                                    Homestead
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/transport-services">
+                                    Transport
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/rent-or-hire">
+                                    Rental Hire
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/work-wanted">
+                                    Work Wanted
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/agistment">
+                                    Agistment
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/agricultural-services">
+                                    Farm
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/public-notices">
+                                    Public Notices
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/trades">
+                                    Trades
+                                  </a>
+                                </li>
+                                <li>
+                                  <a target="" href="https://www.agtrader.com.au/category/farm-services/other">
+                                    Other
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+
+                </div>
+                <div class="dropdown language-dropdown nav-dropdown">
+                  <a class='dropdown-main-heading' data-toggle="dropdown" href="#"><span class="change-text">Sell</span> <i class="fa fa-angle-down"></i></a>
+                  <ul id="sell-dropdown-menu" class="dropdown-menu language-change">
+                    <li>
+                      <a target="" href="https://www.agtrader.com.au/buy_and_sell?type=farmer_options" track-event="Farmer Options - Desktop Nav"><span class="btn-farmer-options">Selling Options</span></a>
+                    </li>
+                    <li>
+                      <a target="" href="https://www.agtrader.com.au/buy_and_sell?type=dealer_options" track-event="Dealer options - Desktop Nav"><span class="btn-dealer-options">Dealer Options</span></a>
+                    </li>
+                    <li>
+                      <a target="" href="https://www.agtrader.com.au/buy_and_sell?type=display_ad" track-event="Display Advertising - Desktop Nav"><span class="btn-display-advertising">Display Advertising</span></a>
+                    </li>
+                    <li>
+                      <a target="" href="https://www.agtrader.com.au/buy_and_sell?type=print_options" track-event="Print Options - Desktop Nav"><span class="btn-print-options">Print Options</span></a>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="dropdown language-dropdown nav-dropdown" ng-show="authenticated">
+                  <a class='dropdown-main-heading' data-toggle="dropdown" href="#"><span class="change-text">My AgTrader</span> <i class="fa fa-angle-down"></i></a>
+                  <ul id="my-agtrader-dropdown-menu" class="dropdown-menu language-change">
+
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/watching">
+                        <span><i class="fa fa-eye fa-lg"></i>Watchlist</span>
+                      </a>
+                    </li>
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/selling" >
+                        <span><i class="fa fa-pencil-square-o fa-lg"></i>My Ads</span>
+                      </a>
+                    </li>
+                    <li class="navsearch" ng-show="currentUser.isASalesRepresentative">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/dealer/create">
+                        <span><i class="fa fa-user fa-lg"></i>Create an agent</span>
+                      </a>
+                    </li>
+                    <li class="navsearch" ng-show="currentUser.dealer && !currentUser.isASalesRepresentative">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/cs/list">
+                        <span><i class="fa fa-tags fa-lg"></i>My Clearing Sales</span>
+                      </a>
+                    </li>
+                    <li class="navsearch" ng-show="currentUser.isASalesRepresentative">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/cs/create">
+                        <span><i class="fa fa-user fa-lg"></i>Create a Clearing Sale</span>
+                      </a>
+                    </li>
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/profile">
+                        <span><i class="fa fa-user fa-lg"></i>My Profile</span>
+                      </a>
+                    </li>
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" ng-click="signOut()">
+                        <span><i class="fa fa-sign-out fa-lg"></i>Sign out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="dropdown language-dropdown" ng-show="authenticated">
+                  <ul class="nav nav-pills">
+                    <li class="navlink">
+                      <a class="navIcone" ng-href="https://www.agtrader.com.au/my-agtrader/saved-search" target=""><saved-search-counter></saved-search-counter></a>
+                    </li>
+                    <li class="square-horizontal navlink navright">
+                      <a class="btn btn-warning" target="_self" ng-href="https://www.agtrader.com.au/secure/place-an-ad/details" track-event="Sell link navbar">Post an ad</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="dropdown language-dropdown" ng-hide="authenticated">
+                  <ul class="nav nav-pills">
+                    <li class="navlink">
+                      <a class="orange-text" id="register" ng-href="https://www.agtrader.com.au/users/sign_up" target="_self">Register</a>
+                    </li>
+                    <li class="navlink">
+                      <a id="login" ng-href="https://www.agtrader.com.au/users/sign_in" target="_self">Login</a>
+                    </li>
+                    <li class="square-horizontal navlink navright">
+                      <a class="btn btn-warning" target="_self" ng-href="https://www.agtrader.com.au/secure/place-an-ad/details" track-event="Sell link navbar">Post an ad</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+          </div>
+          <div class="container" ng-if="!currentUser.isAdmin && currentUser.isASalesRepresentative">
+            <div id="topbar" class="navbar-header">
+              <div id="topbar-left">
+                <a class="navbar-brand" href="https://www.agtrader.com.au/" target="_self">
+                  <div class="agtrader-logo-white"></div>
+                </a>
+              </div>
+              <div id="topbar-right">
+                <div class="dropdown language-dropdown nav-dropdown" ng-show="authenticated">
+                  <a class='dropdown-main-heading' data-toggle="dropdown" href="#"><span class="change-text">My AgTrader</span>
+                    <i class="fa fa-angle-down"></i></a>
+                  <ul id="my-agtrader-dropdown-menu" class="dropdown-menu language-change">
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/dealer/create">
+                        <span><i class="fa fa-user fa-lg"></i>Create an agent</span>
+                      </a>
+                    </li>
+                    <li class="navsearch" ng-show="currentUser.isASalesRepresentative">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/cs/create">
+                        <span><i class="fa fa-user fa-lg"></i>Create a Clearing Sale</span>
+                      </a>
+                    </li>
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" href="https://www.agtrader.com.au/my-agtrader/profile">
+                        <span><i class="fa fa-user fa-lg"></i>My Profile</span>
+                      </a>
+                    </li>
+                    <li class="navsearch">
+                      <a target="" type="button" class="btn btn-browse" ng-click="signOut()">
+                        <span><i class="fa fa-sign-out fa-lg"></i>Sign out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="dropdown language-dropdown">
+                  <ul class="nav nav-pills">
+                    <li class="square-horizontal navlink navright">
+                    </li>
+                  </ul>
+                </div>
+                <div class="dropdown language-dropdown">
+                  <ul class="nav nav-pills">
+                    <li class="square-horizontal navlink navright">
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header><!--/#navigation-->
+
+
+  </div>
+  <div style="position:relative; z-index: 0;">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10 col-md-offset-2">
+          <div class="flash-messages">
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&appId=277606815780468&version=v2.0";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <!--[if lte IE 8]>
+    <p class="browser-warning">
+      Agtrader is only available to modern browsers.
+      It takes no time at all to update and you benefit from;
+      Far fewer instances of crashing or freezing.
+      Much more secure from virus, malware, and browser hijacking attacks.
+      Much faster page-loading.
+      New browsers auto-update so you’ll never need to do this again.
+      Full access to all modern websites (including AgTrader)
+      Simply use this link <a href="http://outdatedbrowser.com/en" target="_blank">http://outdatedbrowser.com/en</a>
+      to quickly upgrade and then reload this page.</p>
+    </p>
+    <![endif]-->
+
+    <div id="adspot-1x11-pos1"></div>
+
+    <div class="gutters-wrapper" ng-hide="ifSourceIsNotAgtrader(source)">
+      <div class="gutters">
+        <div class="gutter-left" id="adops-gutterleft"></div>
+        <div class="gutter-right" id="adops-gutterright"></div>
+      </div>
+    </div>
+
+    <div class="fixTopMargin">
+      <div class="row" ng-if="page == 'home'">
+        <div class="col-md-12 col-sm-12">
+          <div class="banner" >
+            <div class="banner-content img-responsive img-center">
+              <a class="logo" href="https://www.agtrader.com.au/" track-event="Agtrader Logo Home">
+                <webp-image src="AgLogo_home.png" alt="banner"></webp-image>
+              </a>
+              <h1>{{ ::tenant.slogan }}</h1>
+              <div class="main-search">
+                <div main-category-search ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content {{sectionClass()}}" style="min-height: 1000px;">
+      <div ng-view class="clearfix" ng-class="page == 'home' ? 'view-background': ''"></div>
+
+      <div ng-hide="true">
+        <div id="adspot-interstitial" class="leaderboard"></div>
+      </div>
+
+      <div ng-show="page == 'search' && !dealerModeIsActivated">
+        <div id="adspot-728x90-pos2" class="leaderboard"></div>
+      </div>
+      <div id="error-frame-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <input type="button" class="close-popup" data-dismiss="modal" aria-hidden="true">
+              <h2>IE Warning Message</h2>
+            </div>
+            <div class="modal-body" >
+              <p class="error"> Agtrader is only available to modern browsers.
+                It takes no time at all to update and you benefit from;
+                Far fewer instances of crashing or freezing.
+                Much more secure from virus, malware, and browser hijacking attacks.
+                Much faster page-loading.
+                New browsers auto-update so you’ll never need to do this again.
+                Full access to all modern websites (including AgTrader)
+                Simply use this link <a href="http://outdatedbrowser.com/en" target="_blank">http://outdatedbrowser.com/en</a>
+                to quickly upgrade and then reload this page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 col-sm-12">
+          <footer class="clearfix" ng-hide="ifSourceIsNotAgtrader(source)">
+            <div class="content-wrap footer-content">
+              <p>More from our rural network</p>
+              <div class="rural">
+                <!-- UI NOTE: alt tags need to be updated -->
+                <div class="ad-logos">
+                  <a href="http://www.northqueenslandregister.com.au" target="_blank"><div class="north-qld"></div></a>
+                  <a href="http://www.queenslandcountrylife.com.au" target="_blank"><div class="qld-cl"></div></a>
+                  <a href="http://www.theland.com.au" target="_blank"><div class="the-land"></div></a>
+                  <a href="http://www.stockandland.com.au" target="_blank"><div class="stock-land"></div></a>
+                  <a href="http://www.stockjournal.com.au" target="_blank"><div class="stock-journal"></div></a>
+                  <a href="http://www.countrycars.com.au" target="_blank"><div class="country-cars"></div></a>
+                  <a href="http://www.farmweekly.com.au" target="_blank"><div class="farm-weekly"></div></a>
+                </div>
+              </div>
+              <div class="footer-inner">
+                <ul>
+                  <li class="title">CATEGORIES</li>
+                  <li>
+                    <a target="" href="https://www.agtrader.com.au/search" track-event="All Categories - Footer Desktop">All Categories</a>
+                  </li>
+                  <li ng-repeat="cat in ::tenant.homepageCategories">
+                    <a target="" href="https://www.agtrader.com.au/category/{{cat.slug}}" track-event="{{ ::cat.label }} - Footer Desktop">{{ ::cat.label }}</a>
+                  </li>
+                </ul>
+                <ul>
+                  <li class="title">Buy and Sell</li>
+                  <li><a target="" ng-href="https://www.agtrader.com.au/buy_and_sell?type=farmer_options" track-event="Sell your items - Footer Desktop">Sell your items</a></li>
+                  <li><a target="" ng-href="https://www.agtrader.com.au/buy_and_sell?type=dealer_options"  track-event="Sell as a Dealer - Footer Desktop">Sell as a Dealer</a></li>
+                  <li><a target="" ng-href="https://www.agtrader.com.au/buy_and_sell?type=display_ad" track-event="Advertise with us - Footer Desktop">Advertise with us</a></li>
+                  <li><a target="" ng-href="https://www.agtrader.com.au/buy_and_sell?type=print_options" track-event="Advertise in your local paper - Footer Desktop">Advertise in your local paper</a></li>
+                  <li><a target="" ng-show="authenticated" href="https://www.agtrader.com.au/my-agtrader/selling">Manage your ads</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/support/safety">Safe selling</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/support/safety">Safe buying</a></li>
+                  <li><a target="" ng-show="false" href="https://www.agtrader.com.au/my-agtrader/api-key">API Key</a></li>
+                </ul>
+                <ul>
+                  <li class="title">AgTrader</li>
+                  <li><a target="" href="https://www.agtrader.com.au/about" track-event="Abouts - Footer Desktop">About Us</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/contact-us" track-event="Contact Us - Footer Desktop">Contact us</a></li>
+                  <li><a ng-href="https://www.agtrader.com.au/support/privacy-policy">Privacy policy</a></li>
+                  <li><a ng-href="{{ ::tenant.termsAndConditionsUrl }}" target="_blank">Conditions of use</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/support/conditions-of-sale" track-event>Conditions of Sale</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/support/faq" track-event>FAQs</a></li>
+                </ul>
+
+                <ul>
+                  <li class="title">Browse States</li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/nsw/page/1">NSW</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/qld/page/1">QLD</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/vic/page/1">VIC</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/wa/page/1">WA</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/act/page/1">ACT</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/sa/page/1">SA</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/tas/page/1">TAS</a></li>
+                  <li><a target="" href="https://www.agtrader.com.au/search/nt/page/1">NT</a></li>
+                </ul>
+
+                <div class="copyright">
+                  <h3 class="logo-footer">Ag Trader</h3>
+                  <br class="clear" />
+                  AgTrader &copy; All Rights Reserved 2019
+                </div>
+              </div>
+
+              <div class="clear"></div>
+            </div>
+          </footer>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div auth-popup></div>
+</div>
+
+
+<div ng-if="validIpAddress">
+  <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function()
+      { var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0]; s1.async=true; s1.src='https://embed.tawk.to/579002105f1699a469a8c6ac/default'; s1.charset='UTF-8'; s1.setAttribute('crossorigin','*'); s0.parentNode.insertBefore(s1,s0); }
+    )();
+  </script>
+</div>
+
+<script type="text/javascript">
+  _satellite.pageBottom();
+</script>
+<script type="text/javascript" src="https://www.agtrader.com.au//cdn-gl.imrworldwide.com/novms/js/2/ggcmb510.js"> </script>
+<script type="text/javascript">
+
+  var _nolggGlobalParams = {
+    sfcode: 'dcr',
+    apid: 'P86B9F926-531A-432D-A9F6-470905A2D360',
+    apn: 'AgTrader',
+    nsdkv: '511'
+  };
+
+  var nSdkInstance = NOLCMB.getInstance(_nolggGlobalParams.apid);
+  nSdkInstance.ggInitialize(_nolggGlobalParams);
+</script>
+<!-- START Nielsen Online SiteCensus V6.0 -->
+<!-- COPYRIGHT 2012 Nielsen Online -->
+<script type="text/javascript" src="https://www.agtrader.com.au//secure-gl.imrworldwide.com/v60.js">
+</script>
+<script type="text/javascript">
+  var pvar = { cid: "f2", content: "0", server: "secure-gl" };
+  var trac = nol_t(pvar);
+  trac.record().post();
+</script>
+<noscript>
+  <div>
+    <img src="https://www.agtrader.com.au//secure-au.imrworldwide.com/cgi-bin/m?ci=f2&amp;cg=0&amp;cc=1&amp;ts=noscript"
+         width="1" height="1" alt="" />
+  </div>
+</noscript>
+<!-- END Nielsen Online SiteCensus V6.0 -->
+<!-- AgTrader assets -->
+<link href="https://www.agtrader.com.au/assets/application-d29237ecb91b5f8dd38f8f0a719cd397.css" media="all" rel="stylesheet" />
+<link href="https://www.agtrader.com.au/assets/tenants/atau-9448769cbd373b2bba35e5fcdb74b68c.css" media="all" rel="stylesheet" />
+<script src="https://www.agtrader.com.au/assets/application-e96350916aa3e7a0585c35aae8671225.js"></script>
+<link href="https://www.agtrader.com.au/assets/news_overrides-3a47c0fffe195ae8ff228c1b7f1c4da0.css" media="all" rel="stylesheet" />
+</body>
+</html>

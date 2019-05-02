@@ -27,7 +27,7 @@ export interface IBrowser {
 
   getTab (tabIndex : number) : Page;
 
-  openNewTab () : Observable<void>;
+  openNewTab () : Observable<Page>;
 
   setActiveTab (tabIndex : number) : Observable<void>;
 
@@ -75,17 +75,16 @@ export class Browser extends ManagerItem implements IBrowser {
     return this.pageManager.getInstance(tabIndex);
   }
 
-  openNewTab (url? : string) : Observable<void> {
+  openNewTab (url? : string) : Observable<Page> {
     return this.pageManager.openNewInstance()
       .pipe(
         flatMap(page => {
           if (url) {
-            return page.open(url);
+            return page.open(url).pipe(mapTo(page));
           }
 
-          return of(null);
+          return of(page);
         }),
-        mapTo(undefined),
       );
   }
 
