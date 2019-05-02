@@ -1,5 +1,5 @@
 {
-  "name": "phantom-crawler-server",
+  "name": "headless-browser",
   "version": "3.0.0",
   "description": "Crawl websites with PhantomJS or Puppeteer",
   "main": "lib/app.js",
