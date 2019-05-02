@@ -107,11 +107,19 @@ export class PageManager {
       );
   }
 
-  registerPages (pages : IPagePossibilities[]) {
-    this.pagesSubject.next([
-      ...this.pagesSubject.value,
-      ...pages.map(page => new Page(this.browser, page)),
-    ]);
+  registerPages (pagePossibilities : IPagePossibilities[]) {
+    const pages = pagePossibilities.map(possibilities => new Page(this.browser, possibilities));
+
+    return combineLatest(pages.map(page => page.setViewport(1800, 1200)))
+      .pipe(
+        tap(() => {
+          this.pagesSubject.next([
+            ...this.pagesSubject.value,
+            ...pages,
+          ]);
+        }),
+        mapTo(undefined),
+      )
   }
 
   closeTabAtIndex (index) {
