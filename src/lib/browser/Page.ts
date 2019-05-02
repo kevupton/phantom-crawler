@@ -7,7 +7,7 @@ import {
   Page as ChromePage,
   ScreenshotOptions,
 } from 'puppeteer';
-import { AsyncSubject, combineLatest, Observable, throwError } from 'rxjs';
+import { AsyncSubject, combineLatest, Observable } from 'rxjs';
 import { from } from 'rxjs/internal/observable/from';
 import { of } from 'rxjs/internal/observable/of';
 import { tap } from 'rxjs/internal/operators/tap';
@@ -20,9 +20,9 @@ export interface IPage {
 
   contains (options? : DomOptions) : Observable<boolean>;
 
-  getValues (options? : DomOptions) : Observable<[]>;
+  getValues (options? : DomOptions) : Observable<any[]>;
 
-  click (options? : DomOptions & { options? : ClickOptions }) : Observable<void>;
+  click (options? : DomOptions & IClickOptions) : Observable<void>;
 
   hover (options? : DomOptions) : Observable<void>;
 
@@ -43,6 +43,10 @@ export interface IPage {
   getUrl () : Observable<string>;
 
   setViewport (width : number, height : number) : Observable<void>;
+}
+
+interface IClickOptions {
+  options? : ClickOptions;
 }
 
 interface IScrollToResult {
@@ -82,58 +86,99 @@ export class Page extends Setup implements IPage {
     super();
   }
 
+  run<R> (fn : EvaluateFn, ...args : any[]) : Observable<any> {
+    return this.caseManager(
+      chromePage => from(chromePage.mainFrame()
+        .evaluate(fn, ...args)),
+    );
+  }
+
+  contains ({ selector, xpath } : DomOptions) : Observable<boolean> {
+    return this.caseManager(
+      chromePage => {
+        return this.getChromeItems(chromePage, selector, xpath)
+          .pipe(
+            map(items => items.length > 0),
+          );
+      },
+    );
+  }
+
+  getValues ({ selector, xpath } : DomOptions) : Observable<any[]> {
+    return this.caseManager(
+      chromePage => {
+        return this.getChromeItems(chromePage, selector, xpath)
+          .pipe(
+            flatMap(items => from(chromePage.evaluate((...elements) => {
+              return elements.map(element => element.value || element.nodeValue || element.textContent);
+            }, ...items))),
+          );
+      },
+    );
+  }
+
+  click ({ selector, xpath, options } : DomOptions & IClickOptions) : Observable<void> {
+    return this.caseManager(
+      chromePage => {
+        return this.getChromeItems(chromePage, selector, xpath)
+          .pipe(
+            flatMap(items => {
+              if (!items.length) {
+                return of(null);
+              }
+              return combineLatest(items.map(item => from(item.click(options))));
+            }),
+          );
+      },
+    );
+  }
 
   hover ({ selector, xpath } : DomOptions) {
     return this.caseManager(
       chromePage => {
-        if (xpath) {
-          return from(chromePage.$x(selector))
-            .pipe(flatMap(elements => {
+        const items$ = this.getChromeItems(chromePage, selector, xpath);
+        return this.getChromeItems(chromePage, selector, xpath)
+          .pipe(
+            flatMap(elements => {
               if (!elements.length) {
-                return;
+                return of(null);
               }
-              const hovers = elements.map(element => from(element.hover()));
-              return combineLatest(hovers);
-            }));
-        }
-        return from(chromePage.hover(selector));
-      }
-    )
+              return combineLatest(elements.map(element => from(element.hover())));
+            }),
+          );
+      },
+    );
   }
 
   focus ({ selector, xpath } : DomOptions) {
     return this.caseManager(
       chromePage => {
-        if (xpath) {
-          return from(chromePage.$x(selector))
-            .pipe(flatMap(elements => {
+        return this.getChromeItems(chromePage, selector, xpath)
+          .pipe(
+            flatMap(elements => {
               if (!elements.length) {
-                return;
+                return of(null);
               }
-              const focuses = elements.map(element => from(element.focus()));
-              return combineLatest(focuses);
-            }));
-        }
-        return from(chromePage.focus(selector));
-      }
+              return combineLatest(elements.map(element => from(element.focus())));
+            }),
+          );
+      },
     );
   }
 
   type ({ xpath, selector, options, text } : DomOptions & TypeOptions) {
     return this.caseManager(
       chromePage => {
-        if (xpath) {
-          return from(chromePage.$x(selector))
-            .pipe(flatMap(elements => {
+        return this.getChromeItems(chromePage, selector, xpath)
+          .pipe(
+            flatMap(elements => {
               if (!elements.length) {
-                return;
+                return of(null);
               }
-              const typings = elements.map(element => from(element.type(text, options)));
-              return combineLatest(typings);
-            }));
-        }
-        return from(chromePage.type(selector, text, options));
-      }
+              return combineLatest(elements.map(element => from(element.type(text, options))));
+            }),
+          );
+      },
     );
   }
 
@@ -142,7 +187,7 @@ export class Page extends Setup implements IPage {
       chromePage => from(chromePage.waitForNavigation({
         waitUntil: 'networkidle0',
         timeout: 120000,
-      }))
+      })),
     );
   }
 
@@ -233,19 +278,19 @@ export class Page extends Setup implements IPage {
 
   captureScreenshot (options? : ScreenshotOptions) : Observable<Buffer> {
     return this.caseManager(
-      chromePage => from(chromePage.screenshot(options))
+      chromePage => from(chromePage.screenshot(options)),
     );
   }
 
   refresh (options? : NavigationOptions) : Observable<void> {
     return this.caseManager(
-      chromePage => from(chromePage.reload(options))
+      chromePage => from(chromePage.reload(options)),
     );
   }
 
   getUrl () {
     return this.caseManager(
-      chromePage => of(chromePage.url())
+      chromePage => of(chromePage.url()),
     );
   }
 
@@ -283,7 +328,10 @@ export class Page extends Setup implements IPage {
       );
   }
 
-  private caseManager (chromeMethod : (page : ChromePage) => Observable<any>, phantomMethod? : (page : PhantomPage) => Observable<any>) {
+  private caseManager (
+    chromeMethod : (page : ChromePage) => Observable<any>,
+    phantomMethod? : (page : PhantomPage) => Observable<any>,
+  ) {
     return this.pageSubject.pipe(
       flatMap(({ chromePage, phantomPage }) => {
         if (chromePage) {
@@ -299,5 +347,9 @@ export class Page extends Setup implements IPage {
         }
       }),
     );
+  }
+
+  private getChromeItems (chromePage : ChromePage, selector : string, xpath? : boolean) {
+    return xpath ? from(chromePage.$x(selector)) : from(chromePage.$$(selector));
   }
 }
