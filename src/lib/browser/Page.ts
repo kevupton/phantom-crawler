@@ -16,6 +16,9 @@ import { Browser } from './Browser';
 import { Setup } from './Setup';
 
 export interface IPage {
+
+  open(url) : Observable<IOpenResponse>;
+
   run<R> (fn : EvaluateFn, ...args : any[]) : Observable<void>;
 
   contains (options? : DomOptions) : Observable<boolean>;
@@ -43,6 +46,10 @@ export interface IPage {
   getUrl () : Observable<string>;
 
   setViewport (width : number, height : number) : Observable<void>;
+}
+
+interface IOpenResponse {
+  status : number;
 }
 
 interface IClickOptions {
@@ -84,6 +91,16 @@ export class Page extends Setup implements IPage {
     private readonly browser : Browser,
   ) {
     super();
+  }
+
+  open (url : string) : Observable<IOpenResponse> {
+    return this.caseManager(
+      chromePage => from(chromePage.goto(url, { timeout: 300000 })).pipe(
+        map(response => ({
+          status: response.status()
+        })),
+      ),
+    );
   }
 
   run<R> (fn : EvaluateFn, ...args : any[]) : Observable<any> {
