@@ -18,23 +18,23 @@ import { Setup } from './Setup';
 export interface IPage {
   run<R> (fn : EvaluateFn, ...args : any[]) : Observable<void>;
 
-  contains (options : DomOptions) : Observable<boolean>;
+  contains (options? : DomOptions) : Observable<boolean>;
 
-  getValues (options : DomOptions) : Observable<[]>;
+  getValues (options? : DomOptions) : Observable<[]>;
 
-  click (options : DomOptions & { options? : ClickOptions }) : Observable<void>;
+  click (options? : DomOptions & { options? : ClickOptions }) : Observable<void>;
 
-  hover (options : DomOptions) : Observable<void>;
+  hover (options? : DomOptions) : Observable<void>;
 
-  focus (options : DomOptions) : Observable<void>;
+  focus (options? : DomOptions) : Observable<void>;
 
-  type (options : DomOptions & TypeOptions) : Observable<void>;
+  type (options? : DomOptions & TypeOptions) : Observable<void>;
 
   awaitPageLoad (duration : number) : Observable<void>;
 
-  setScrollTop (query : string, top : number) : Observable<void>;
+  setScrollTop (options? : DomOptions & ScrollTopOptions) : Observable<boolean>;
 
-  scrollTo (options? : DomOptions & ScrollTopOptions) : Observable<void>;
+  scrollTo (options? : DomOptions) : Observable<IScrollToResult>;
 
   captureScreenshot (options? : ScreenshotOptions) : Observable<Buffer>;
 
@@ -43,6 +43,12 @@ export interface IPage {
   getUrl () : Observable<string>;
 
   setViewport (width : number, height : number) : Observable<void>;
+}
+
+interface IScrollToResult {
+  scrolled : boolean;
+  error? : string;
+  scrollTop? : number;
 }
 
 interface IPagePossibilities {
@@ -140,38 +146,60 @@ export class Page extends Setup implements IPage {
     );
   }
 
-  setScrollTop ({ selector, xpath, top } : DomOptions & ScrollTopOptions) {
-    const xpathCmd = `() => {
-      const top = ${ JSON.stringify(top) };
-      const item = $x();
-        
-    })()`;
-    const querySelectorCmd = `(() => {
-      const top = ${ JSON.stringify(top) };
-      const item = document.querySelectorAll(${ JSON.stringify(selector) });
+  setScrollTop ({ selector, xpath, top } : DomOptions & ScrollTopOptions) : Observable<boolean> {
+    const xpathCmd = `
+      const itemsXpath = document
+            .evaluate(
+                ${ JSON.stringify(selector) },
+                document,
+                null,
+                XPathResult.ANY_TYPE,
+                null
+            )
+            .singleNodeValue;
+      let item;
+      const items = [];
       
-      if (!item) {
+      while (item = itemsXpath.iterateNext()) {
+        items.push(item);
+      }
+      `;
+
+    const querySelectorCmd = `const items = Array.from(document.querySelectorAll(${ JSON.stringify(selector) }));`;
+
+    const evaluateCommand = `(() => {
+      const top = ${ JSON.stringify(top) };
+      ${ xpath ? xpathCmd : querySelectorCmd }
+      
+      if (!items.length) {
         return false;
       }
       
-      item.scrollTop = top;
+      items.forEach(item => item.scrollTop = top);
       return true;
     })()`;
 
-    return this.activePage.evaluate()
-      .catch(err => {
-        console.error('ScrollTop Method Error', err);
-      });
+    return this.caseManager(
+      chromePage => from(chromePage.evaluate(evaluateCommand)),
+    );
   }
 
-  async scrollTo (query : string) {
-    if (!this.activePage) {
-      return;
-    }
+  scrollTo ({ selector, xpath } : DomOptions) : Observable<IScrollToResult> {
 
-    return this.activePage.evaluate(`(() => {
-      const query = ${ JSON.stringify(query) };
-      const item = document.querySelector(query);
+    const xpathQuery = `document
+            .evaluate(
+                ${ JSON.stringify(selector) },
+                document,
+                null,
+                XPathResult.FIRST_ORDERED_NODE_TYPE,
+                null
+            )
+            .singleNodeValue;`;
+
+    const querySelectorQuery = `document.querySelector(${ JSON.stringify(selector) });`;
+
+    const command = `(() => {
+      const item = ${ xpath ? xpathQuery : querySelectorQuery }
       const parent = item.parentElement;
       
       return new Promise(res => {
@@ -196,10 +224,11 @@ export class Page extends Setup implements IPage {
           }
         }, 500);
       });
-    })()`)
-      .catch(err => {
-        console.error('ScrollTo Method Error', err);
-      });
+    })()`;
+
+    return this.caseManager(
+      chromePage => from(chromePage.evaluate(command)),
+    );
   }
 
   captureScreenshot (options? : ScreenshotOptions) : Observable<Buffer> {
