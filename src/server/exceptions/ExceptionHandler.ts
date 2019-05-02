@@ -6,9 +6,9 @@ import { Exception } from './Exception';
 
 export class ExceptionHandler {
   constructor (
-    private error : Exception,
-    private request : HTTPRequest,
-    private response : HTTPResponse,
+    error : Exception,
+    request : HTTPRequest,
+    response : HTTPResponse,
   ) {
     console.error(`[ERROR]: Uncaught '${ error.name }': ${ error.message }`);
     response.error(error);

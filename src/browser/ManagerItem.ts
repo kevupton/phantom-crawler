@@ -1,5 +1,5 @@
 import { AsyncSubject, Observable, Subscription } from 'rxjs';
-import { from } from 'rxjs/internal/observable/from';
+import { of } from 'rxjs/internal/observable/of';
 import { mapTo, shareReplay, tap } from 'rxjs/operators';
 
 export enum SetupStage {
@@ -29,7 +29,7 @@ export abstract class ManagerItem {
     }
 
     this.setupStage = SetupStage.Constructed;
-    return from(this.handleConstruction() || null)
+    return (this.handleConstruction() || of(null))
       .pipe(
         tap(() => {
           this.constructedSubject.next();
@@ -53,7 +53,7 @@ export abstract class ManagerItem {
     this.setupStage = SetupStage.Destructed;
     this.subscriptions.unsubscribe();
 
-    return from(this.handleDestruct() || null)
+    return (this.handleDestruct() || of(null))
       .pipe(
         tap(() => {
           this.destroyedSubject.next();

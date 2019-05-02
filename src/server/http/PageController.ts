@@ -1,11 +1,11 @@
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { flatMap, map, mapTo } from 'rxjs/operators';
 import { Controller } from '../Controller';
 import { Exception } from '../exceptions/Exception';
 
 export class PageController extends Controller {
-  click ({ selector, button, xpath, tabIndex, awaitPageLoad = true } : any) : Observable<void> {
+  click ({ selector, button, xpath, tabIndex, awaitPageLoad = true } : any) {
     if (!selector) throw new Exception('Expected query to be defined', 400);
 
     button = button || 'left';

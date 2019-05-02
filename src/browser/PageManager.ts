@@ -43,7 +43,7 @@ export class PageManager extends Manager<Page> {
   setActiveInstance (index : number) {
     return super.setActiveInstance(index)
       .pipe(
-        flatMap(page => page.bringToFront()),
+        flatMap(page => page.bringToFront().pipe(mapTo(page))),
       );
   }
 
