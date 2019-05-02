@@ -1,4 +1,6 @@
 import { Express, Request, Response } from 'express';
+import { Observable } from 'rxjs';
+import { first } from 'rxjs/internal/operators/first';
 import { BrowserManager } from '../browser/BrowserManager';
 import { environment } from '../lib/Environment';
 import { Controller } from './Controller';
@@ -53,8 +55,14 @@ export class Router {
 
         if (typeof ctrl[method] === 'function') {
           try {
+            const send = (d : any) => response.send(d || null);
             const data = await ctrl[method](Object.assign(req.query, req.params, request.body));
-            response.send(data || null);
+            if (data instanceof Observable) {
+              data.pipe(first()).subscribe(send)
+            }
+            else {
+              send(data);
+            }
           }
           catch (e) {
             error = e;
