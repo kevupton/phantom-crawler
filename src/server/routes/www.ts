@@ -1,6 +1,6 @@
-import { BrowserController } from '../../http/BrowserController';
+import { BrowserController } from '../http/BrowserController';
 import { Router } from '../Router';
-import { PageController } from '../../http/PageController';
+import { PageController } from '../http/PageController';
 
 export function www (router : Router) {
   router.get('active', BrowserController);

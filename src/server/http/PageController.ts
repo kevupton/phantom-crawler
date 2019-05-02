@@ -1,8 +1,8 @@
 import { combineLatest } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
 import { flatMap, map, mapTo } from 'rxjs/operators';
-import { Controller } from '../server/Controller';
-import { Exception } from '../server/exceptions/Exception';
+import { Controller } from '../Controller';
+import { Exception } from '../exceptions/Exception';
 
 export class PageController extends Controller {
   click ({ selector, button, xpath, tabIndex, awaitPageLoad = true }) {
