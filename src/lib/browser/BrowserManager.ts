@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { Browser, BrowserType } from './Browser';
 
 export class BrowserManager {
@@ -8,20 +8,31 @@ export class BrowserManager {
     return this.browsersSubject.value;
   }
 
+  reset () {
+    return combineLatest(this.browsersSubject.value.map(browser => browser.destroy()));
+  }
+
   openNewBrowser(type : BrowserType = BrowserType.Chrome) {
-    const browser = new Browser(type);
+    return new Observable(subscriber => {
+      const browser = new Browser(type);
 
-    browser.destroyed$.subscribe(() => {
-      this.browsersSubject.next(
-        this.browsersSubject.value.filter(b => b !== browser)
-      )
+      subscriber.add(browser.setup().subscribe({
+        complete: () => {
+          browser.destroyed$.subscribe(() => {
+            this.browsersSubject.next(
+              this.browsersSubject.value.filter(b => b !== browser)
+            )
+          });
+
+          this.browsersSubject.next([
+            ...this.browsersSubject.value,
+            browser,
+          ]);
+
+          subscriber.next();
+          subscriber.complete();
+        }
+      }));
     });
-
-    this.browsersSubject.next([
-      ...this.browsersSubject.value,
-      browser,
-    ]);
-
-    return browser.setup();
   }
 }

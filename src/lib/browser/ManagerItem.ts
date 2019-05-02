@@ -28,7 +28,7 @@ export abstract class ManagerItem {
     }
 
     this.setupStage = SetupStage.Constructed;
-    const obs$ = from(this.handleConstruction() || null)
+    return from(this.handleConstruction() || null)
       .pipe(
         tap(() => {
           this.constructedSubject.next();
@@ -37,10 +37,6 @@ export abstract class ManagerItem {
         mapTo(this),
         shareReplay(1),
       );
-
-    obs$.subscribe(); // just to execute the setup
-
-    return obs$;
   }
 
   protected abstract handleConstruction () : Observable<any> | void;
@@ -54,7 +50,7 @@ export abstract class ManagerItem {
     }
 
     this.setupStage = SetupStage.Destructed;
-    const obs$ = from(this.handleDestruct() || null)
+    return from(this.handleDestruct() || null)
       .pipe(
         tap(() => {
           this.destroyedSubject.next();
@@ -63,10 +59,6 @@ export abstract class ManagerItem {
         mapTo(undefined),
         shareReplay(1),
       );
-
-    obs$.subscribe(); // just to exec the destruction
-
-    return obs$;
   }
 
   protected abstract handleDestruct () : Observable<any> | void;

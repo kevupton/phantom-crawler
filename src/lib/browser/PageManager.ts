@@ -33,28 +33,31 @@ export class PageManager {
   }
 
   openNewTab () {
-    const page = new Page(this.browser);
+    return new Observable<void>(subscriber => {
+      const page = new Page(this.browser);
 
-    const setup$ = page.setup();
+      subscriber.add(page.setup().pipe(
+        flatMap(() => page.setViewport(1800, 1200))
+      ).subscribe({
+        complete: () => {
+          page.destroyed$.subscribe(() => {
+            this.pagesSubject.next(
+              this.pagesSubject.value.filter(p => p !== page),
+            );
+          });
 
-    setup$.subscribe({
-      complete: () => {
-        page.setViewport(1800, 1200);
-      },
+          this.pagesSubject.next([
+            ...this.pagesSubject.value,
+            page,
+          ]);
+
+          subscriber.next();
+          subscriber.complete();
+        },
+      }));
     });
 
-    page.destroyed$.subscribe(() => {
-      this.pagesSubject.next(
-        this.pagesSubject.value.filter(p => p !== page),
-      );
-    });
 
-    this.pagesSubject.next([
-      ...this.pagesSubject.value,
-      page,
-    ]);
-
-    return setup$;
   }
 
   closeTab (tabToRemove : any) {
