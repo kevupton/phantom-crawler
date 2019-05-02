@@ -1,141 +1,147 @@
+import { combineLatest } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
+import { flatMap, map, mapTo } from 'rxjs/operators';
 import { Controller } from '../server/Controller';
 import { Exception } from '../server/exceptions/Exception';
 
 export class PageController extends Controller {
-  click ({ query, button, xpath, tabIndex, awaitPageLoad = true }) {
-    if (!query) throw new Exception('Expected query to be defined', 400);
-
-    let result : any = null;
+  click ({ selector, button, xpath, tabIndex, awaitPageLoad = true }) {
+    if (!selector) throw new Exception('Expected query to be defined', 400);
 
     button = button || 'left';
-    if (![ 'left', 'right', 'middle' ].includes(button)) {
+    if (!['left', 'right', 'middle'].includes(button)) {
       throw new Exception('Invalid button type. Expected left, right or middle', 400);
     }
 
-    try {
-      let watch : () => Promise<any> | null;
-      if (awaitPageLoad) {
-        watch = this.browser.getTab(tabIndex).awaitPageLoad();
-      }
-      result = await this.browser.click(query, { button }, xpath, tabIndex);
-      if (watch) {
-        await watch();
-      }
-    }
-    catch (e) {
-      result = e;
-    }
-
-    return { result };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.click({ selector, xpath, options: { button } })
+          .pipe(
+            flatMap((result) => {
+              const obs$ = awaitPageLoad ? of(null) : page.awaitPageLoad();
+              return obs$.pipe(mapTo({ result }));
+            }))),
+      );
   }
 
-  async hover ({ query, xpath }) {
-    if (!query) throw new Exception('Expected query to be defined', 400);
+  hover ({ selector, xpath, tabIndex }) {
+    if (!selector) throw new Exception('Expected query to be defined', 400);
 
-    let result : any = null;
-    try {
-      result = await this.browser.hover(query, xpath);
-    }
-    catch (e) {
-      result = e;
-    }
-
-    return { result };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.hover({ selector, xpath })),
+        map(result => ({ result })),
+      );
   }
 
-  async scrollTop ({ query, top }) {
-    if (!query) throw new Exception('Expected query to be defined', 400);
+  scrollTop ({ selector, xpath, top, tabIndex }) {
+    if (!selector) throw new Exception('Expected query to be defined', 400);
 
     top = top || 0;
 
-    const result  = await this.browser.scrollTop(query, top);
-
-    return { result };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.setScrollTop({ selector, xpath, top })),
+        map(result => ({ result })),
+      );
   }
 
-  async contains({ selector, xpath, tabIndex }) {
+  contains ({ selector, xpath, tabIndex }) {
     if (!selector) throw new Exception('Expected an Selector value', 400);
 
-    return {
-      result: await this.browser.contains(selector, xpath, tabIndex),
-    }
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.contains({ selector, xpath })),
+        map(result => ({ result })),
+      );
   }
 
-  async values ({ elements, xpath, tabIndex }) {
+  values ({ elements, xpath, tabIndex }) {
     if (!elements) throw new Exception('Expected an elements object', 400);
 
-    const results = {};
-
-    for (let key of Object.keys(elements)) {
-      results[key] = await this.browser.getValues(elements[key], xpath, tabIndex);
-    }
-
-    return { results };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => {
+          return combineLatest(
+            Object.keys(elements)
+              .map(key => {
+                return page.getValues({ selector: elements[key], xpath })
+                  .pipe(
+                    map(value => ({ key, value })),
+                  );
+              }),
+          );
+        }),
+        map(pairs => {
+          const results = {};
+          pairs.forEach(({ key, value }) => results[key] = value);
+          return results;
+        }),
+      );
   }
 
-  async scrollTo ({ query }) {
-    if (!query) throw new Exception('Expected query to be defined', 400);
+  scrollTo ({ selector, tabIndex, xpath }) {
+    if (!selector) throw new Exception('Expected query to be defined', 400);
 
-    const result = await this.browser.scrollTo(query);
-
-    return { result };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.scrollTo({ selector, xpath })),
+        map(result => ({ result })),
+      );
   }
 
-  async focus ({ query, xpath, tabIndex }) {
-    if (!query) throw new Exception('Expected query to be defined', 400);
+  focus ({ selector, xpath, tabIndex }) {
+    if (!selector) throw new Exception('Expected query to be defined', 400);
 
-    const result = await this.browser.focus(query, xpath, tabIndex);
-
-    return { result };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.focus({ selector, xpath })),
+        map(result => ({ result })),
+      );
   }
 
-  async type ({ inputs, delay, tabIndex }) {
+  type ({ inputs, delay, xpath, tabIndex }) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
     delay = delay || 20;
 
-    const queries = Object.keys(inputs);
-    const results = {};
-
-    for (let query of queries) {
-      results[ query ] = await this.browser.type(query, inputs[ query ], { delay }, tabIndex);
-    }
-
-    return { results };
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => {
+          return combineLatest(
+            Object.keys(inputs)
+              .map(selector => page.type({
+                selector,
+                text: inputs[selector],
+                xpath,
+                options: { delay },
+              })
+                .pipe(
+                  map(result => ({ result, selector })),
+                )),
+          );
+        }),
+        map(results => ({ results })),
+      );
   }
 
-  async fill ({ inputs }) {
+  fill ({ inputs, tabIndex }) {
     if (!inputs) throw new Exception('Expected inputs to be defined', 400);
 
-    const result = await this.run((inputs : { [key : string] : string }) => {
-      try {
-        for (let key in inputs) {
-          const element : any = document.querySelector(key);
-          element.value       = inputs[ key ];
-        }
+    return this.getActiveBrowserPage(tabIndex)
+      .pipe(
+        flatMap(page => page.run((inputs : { [key : string] : string }) => {
+          try {
+            for (let key in inputs) {
+              const element : any = document.querySelector(key);
+              element.value       = inputs[key];
+            }
 
-      }
-      catch (e) {
-        return e;
-      }
-    }, inputs);
-
-    return { result };
-  }
-
-  async rightClick ({ query }) {
-    if (!query) throw new Exception('Expected query to be defined', 400);
-
-    let result : any = null;
-
-    try {
-      const watch = await this.awaitPageLoad();
-      result      = await this.browser.click(query);
-      await watch();
-    }
-    catch (e) {
-      result = e;
-    }
-
-    return { result };
+          }
+          catch (e) {
+            return e;
+          }
+        }, inputs)),
+        map(result => ({ result })),
+      );
   }
 }

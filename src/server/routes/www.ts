@@ -13,7 +13,6 @@ export function www (router : Router) {
   router.get('back', BrowserController);
   router.get('get/:url', BrowserController);
   router.get('getTabs', BrowserController);
-  router.post('headers', BrowserController);
   router.post('goto', BrowserController);
   router.post('setActiveTab', BrowserController);
   router.post('openNewTab', BrowserController);

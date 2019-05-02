@@ -117,14 +117,6 @@ export class BrowserController extends Controller {
       flatMap(page => page.open(url)),
     );
   }
-
-  headers ({ headers }) {
-    if (!headers) throw new Exception('Expected headers to be defined', 400);
-
-    return this.activeBrowser$.pipe(
-      flatMap(browser => browser.headers(headers)),
-    )
-  }
 }
 
 
