@@ -2,7 +2,7 @@ import { ArgumentParser } from 'argparse';
 
 export function parseArgs () {
   const parser = new ArgumentParser({
-    version: '2.0.0',
+    version: '3.0.0',
     addHelp:true,
     description: 'Headless Browser'
   });
