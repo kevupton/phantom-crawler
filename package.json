@@ -14,7 +14,7 @@
     "prod": "ts-node-dev src/index.ts",
     "prepublish": "npm run clean && npm run build"
   },
-  "repository": "https://github.com/kevupton/phantom-crawler",
+  "repository": "https://github.com/kevupton/headless-browser",
   "author": "Kevin Upton",
   "license": "ISC",
   "devDependencies": {
