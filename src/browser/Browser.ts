@@ -66,15 +66,15 @@ export class Browser extends ManagerItem implements IBrowser {
   }
 
   getTab (tabIndex? : number) {
-    return this.pageManager.getTab(tabIndex);
+    return this.pageManager.getInstance(tabIndex);
   }
 
   openNewTab () : Observable<Page> {
-    return this.pageManager.openNewTab();
+    return this.pageManager.openNewInstance();
   }
 
   setActiveTab (index : any) : Observable<void> {
-    return this.pageManager.setActiveTab(index);
+    return this.pageManager.setActiveInstance(index);
   }
 
   closeTab (index : any) : Observable<void> {

@@ -1,5 +1,6 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import { BrowserManager } from '../browser/BrowserManager';
 import { routes } from './routes';
 import { Router } from './Router';
 
@@ -7,6 +8,7 @@ export class Server {
   private readonly server = express();
 
   constructor (
+    private readonly browserManager : BrowserManager,
   ) {
     this.configure();
     this.loadRoutes();
@@ -18,7 +20,7 @@ export class Server {
   }
 
   private loadRoutes () {
-    routes(new Router(this.server));
+    routes(new Router(this.server, this.browserManager));
   }
 
   startServer () {

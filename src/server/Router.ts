@@ -1,4 +1,5 @@
 import { Express, Request, Response } from 'express';
+import { BrowserManager } from '../browser/BrowserManager';
 import { environment } from '../lib/Environment';
 import { Controller } from './Controller';
 import { HTTPRequest } from './HTTPRequest';
@@ -8,7 +9,8 @@ import { Exception } from './exceptions/Exception';
 
 export class Router {
   constructor (
-    private express : Express,
+    private readonly express : Express,
+    private readonly browserManager : BrowserManager,
   ) {}
 
   /**
@@ -46,7 +48,7 @@ export class Router {
       }
 
       try {
-        const ctrl = new controller(request, response);
+        const ctrl = new controller(request, response, this.browserManager);
         let error  = null;
 
         if (typeof ctrl[method] === 'function') {
