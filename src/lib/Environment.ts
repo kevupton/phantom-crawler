@@ -1,7 +1,7 @@
 import { camelCase } from 'lodash';
 import { BrowserType } from '../browser/Browser';
 
-export function updateEnvironment(variables : Environment) {
+export function updateEnvironment(variables : Partial<Environment>) {
   Object.keys(variables).forEach(key => {
     environment[camelCase(key)] = variables[key];
   });
