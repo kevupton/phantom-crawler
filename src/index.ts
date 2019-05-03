@@ -1,12 +1,9 @@
-import 'babel-polyfill';
-import { install } from 'source-map-support';
+import 'source-map-support/register';
 import { BrowserManager } from './browser/BrowserManager';
 import { updateEnvironment } from './lib/Environment';
 import { parseArgs } from './lib/util/parseArgs';
 import { Server } from './server/Server';
 export { updateEnvironment } from './lib/Environment'
-
-install();
 
 export const browserManager = new BrowserManager();
 
