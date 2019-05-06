@@ -3,7 +3,7 @@ import {
   Browser as Chrome,
   ClickOptions,
   Cookie,
-  ElementHandle,
+  ElementHandle, EmulateOptions,
   EvaluateFn,
   NavigationOptions,
   Page as ChromePage,
@@ -110,6 +110,12 @@ export class Page extends ManagerItem implements IPage {
   getContent () : Observable<string> {
     return this.caseManager(
       chromePage => from(chromePage.content()),
+    );
+  }
+
+  emulate (options : EmulateOptions) {
+    return this.caseManager(
+      chromePage => from(chromePage.emulate(options)),
     );
   }
 

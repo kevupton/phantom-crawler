@@ -80,7 +80,8 @@ export class Browser extends ManagerItem implements IBrowser {
       .pipe(
         flatMap(page => {
           if (url) {
-            return page.open(url).pipe(mapTo(page));
+            return page.open(url)
+              .pipe(mapTo(page));
           }
 
           return of(page);
@@ -156,16 +157,17 @@ export class Browser extends ManagerItem implements IBrowser {
 
           this.unsubscribeOnDestroy(eventSubscription);
         }),
-        flatMap(browser => from(browser.pages()).pipe(
-          tap(pages => this.pageManager.registerPages(
-            pages.map(page => (<IPagePossibilities>{ chromePage: page })),
+        flatMap(browser => from(browser.pages())
+          .pipe(
+            tap(pages => this.pageManager.registerPages(
+              pages.map(page => (<IPagePossibilities>{ chromePage: page })),
+            )),
+            mapTo(browser),
           )),
-          mapTo(browser),
-        )),
         tap((browser) => {
           this.browserSubject.next({ chromeBrowser: browser });
           this.browserSubject.complete();
-        })
+        }),
       );
   }
 
