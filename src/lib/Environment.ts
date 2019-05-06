@@ -17,7 +17,7 @@ interface Environment {
   openBrowser?: boolean;
 }
 
-export const environment : Environment = {
+export const environment : Readonly<Environment> = {
   appEnv: 'development',
   host: 'localhost',
   port: '1001',
