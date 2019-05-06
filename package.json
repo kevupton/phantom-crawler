@@ -1,6 +1,6 @@
 {
   "name": "headless-browser",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Crawl websites with PhantomJS or Puppeteer",
   "main": "lib/app.js",
   "typings": "lib/index.d.ts",
