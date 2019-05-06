@@ -42,7 +42,7 @@ export interface IPage {
 
   setScrollTop (options? : DomOptions & ScrollTopOptions) : Observable<boolean>;
 
-  emulate (options? : EmulateOptions) : Observable<void>;
+  emulate (options? : IEmulateOptions) : Observable<void>;
 
   scrollTo (options? : DomOptions) : Observable<IScrollToResult>;
 
@@ -57,6 +57,10 @@ export interface IPage {
   bringToFront () : Observable<void>;
 
   setContent (html : string) : Observable<void>;
+}
+
+export interface IEmulateOptions extends EmulateOptions {
+
 }
 
 export interface IOpenResponse {
@@ -116,7 +120,7 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
-  emulate (options : EmulateOptions) {
+  emulate (options : IEmulateOptions) {
     return this.caseManager(
       chromePage => from(chromePage.emulate(options)),
     );
