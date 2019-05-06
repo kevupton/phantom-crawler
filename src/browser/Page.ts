@@ -3,7 +3,8 @@ import {
   Browser as Chrome,
   ClickOptions,
   Cookie,
-  ElementHandle, EmulateOptions,
+  ElementHandle,
+  EmulateOptions,
   EvaluateFn,
   NavigationOptions,
   Page as ChromePage,
@@ -40,6 +41,8 @@ export interface IPage {
   awaitPageLoad (duration : number) : Observable<void>;
 
   setScrollTop (options? : DomOptions & ScrollTopOptions) : Observable<boolean>;
+
+  emulate (options? : EmulateOptions) : Observable<void>;
 
   scrollTo (options? : DomOptions) : Observable<IScrollToResult>;
 
