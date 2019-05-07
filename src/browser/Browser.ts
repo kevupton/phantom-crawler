@@ -137,7 +137,7 @@ export class Browser extends ManagerItem implements IBrowser {
     console.info('[INFO] Starting Chromium browser');
 
     return from(puppeteer.launch({
-      headless: !(environment.debug || environment.openBrowser),
+      headless: environment.headless,
       args: args,
     }))
       .pipe(

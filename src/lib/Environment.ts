@@ -14,7 +14,7 @@ interface Environment {
   port: string;
   debug: boolean;
   proxy?: string;
-  openBrowser?: boolean;
+  headless: boolean;
 }
 
 export const environment : Readonly<Environment> = {
@@ -23,8 +23,8 @@ export const environment : Readonly<Environment> = {
   port: '1001',
   debug: false,
   browserType: BrowserType.Chrome,
+  headless: true,
 };
 
 // Assign the environment variables to the env
 updateEnvironment(<any>process.env);
-
