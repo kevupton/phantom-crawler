@@ -2,7 +2,7 @@ import { WebPage as PhantomPage } from 'phantom';
 import {
   Browser as Chrome,
   ClickOptions,
-  Cookie,
+  Cookie, DirectNavigationOptions,
   ElementHandle,
   EmulateOptions,
   EvaluateFn,
@@ -22,7 +22,7 @@ export interface IPage {
 
   getContent () : Observable<string>;
 
-  open (url : string) : Observable<IOpenResponse>;
+  open (url : string, options? : DirectNavigationOptions) : Observable<IOpenResponse>;
 
   run (fn : EvaluateFn, ...args : any[]) : Observable<void>;
 
@@ -126,9 +126,9 @@ export class Page extends ManagerItem implements IPage {
     );
   }
 
-  open (url : string) : Observable<IOpenResponse> {
+  open (url : string, options? : DirectNavigationOptions) : Observable<IOpenResponse> {
     return this.caseManager(
-      chromePage => from(chromePage.goto(url, { timeout: 300000 }))
+      chromePage => from(chromePage.goto(url, options))
         .pipe(
           map(response => ({
             status: response && response.status() || null,
